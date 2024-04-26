@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS `Major`(
     `major_code`			VARCHAR(30) UNIQUE NOT NULL,
     `major_name`			VARCHAR(100) UNIQUE NOT NULL,
     `faculty_id`			INT,
-    FOREIGN KEY(`faculty_id`) REFERENCES `Faculty`(`id`) ON DELETE CASCADE ON UPDATE CASCADE
+    FOREIGN KEY(`faculty_id`) REFERENCES `Faculty`(`id`) ON DELETE SET NULL ON UPDATE SET NULL
 );
 
 DROP TABLE IF EXISTS `Teacher`; -- Giảng viên
@@ -38,10 +38,12 @@ CREATE TABLE IF NOT EXISTS `Subject` (
 	`subject_code` 			VARCHAR(30) UNIQUE NOT NULL,
     `subject_name`			VARCHAR(100) UNIQUE NOT NULL,
     `number_of_credit`		INT,
+    `actual_quantity`		INT,
+    `max_quantity`			INT,
     `major_id`				INT,
     `teacher_id`			INT, -- giảng viên dạy
-    FOREIGN KEY(`major_id`) REFERENCES `Major`(`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-    FOREIGN KEY(`teacher_id`) REFERENCES `Teacher`(`id`) ON DELETE CASCADE ON UPDATE CASCADE
+    FOREIGN KEY(`major_id`) REFERENCES `Major`(`id`) ON DELETE SET NULL ON UPDATE SET NULL,
+    FOREIGN KEY(`teacher_id`) REFERENCES `Teacher`(`id`) ON DELETE SET NULL ON UPDATE SET NULL
 );
 
 DROP TABLE IF EXISTS `Class_room`; -- Lớp học
@@ -51,15 +53,16 @@ CREATE TABLE IF NOT EXISTS `Class_room`(
     `name` 					VARCHAR(50) NOT NULL,
     `quantity`				INT CHECK(`quantity` >= 0),
     `create_date`			DATETIME DEFAULT NOW(),
+    `course`				INT,
     `major_id`				INT,
-    `teacher_id`			INT, -- giảng viên chủ nhiệm
-    FOREIGN KEY(`major_id`) REFERENCES `Major`(`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-    FOREIGN KEY(`teacher_id`) REFERENCES `Teacher`(`id`) ON DELETE CASCADE ON UPDATE CASCADE
+    `teacher_id`			INT, -- GVCN
+    FOREIGN KEY(`major_id`) REFERENCES `Major`(`id`) ON DELETE SET NULL ON UPDATE SET NULL,
+    FOREIGN KEY(`teacher_id`) REFERENCES `Teacher`(`id`) ON DELETE SET NULL ON UPDATE SET NULL
 );
 
 DROP TABLE IF EXISTS `User`;
 CREATE TABLE IF NOT EXISTS `User` (
-	`user_id`				INT AUTO_INCREMENT PRIMARY KEY,
+	`user_id`				BIGINT AUTO_INCREMENT PRIMARY KEY,
     `user_code`				VARCHAR(20) UNIQUE NOT NULL,
     `username`	 			VARCHAR(50) NOT NULL UNIQUE CHECK (LENGTH(`username`) >= 6 AND LENGTH(`username`) <= 50),
     `email`					VARCHAR(50) NOT NULL UNIQUE CHECK (LENGTH(`email`) >= 6 AND LENGTH(`email`) <= 50),
@@ -72,20 +75,21 @@ CREATE TABLE IF NOT EXISTS `User` (
     `role` 					ENUM('ADMIN', 'USER'),
     `status`				BOOLEAN DEFAULT 0, -- 0: Not Active, 1: Active
     `class_id`				INT,
-    FOREIGN KEY(`class_id`) REFERENCES `Class_room`(`id`) ON DELETE CASCADE ON UPDATE CASCADE
+    FOREIGN KEY(`class_id`) REFERENCES `Class_room`(`id`) ON DELETE SET NULL ON UPDATE SET NULL
 );
 
 DROP TABLE IF EXISTS `Registration_subject`; -- Môn học đăng ký
 CREATE TABLE IF NOT EXISTS `Registration_subject`(
 	`id`					INT AUTO_INCREMENT PRIMARY KEY,
     `subject_id`			INT,
-    `user_id` 				INT,
+    `user_id` 				BIGINT,
    `regular_point_1`		FLOAT DEFAULT 0,
    `regular_point_2`		FLOAT DEFAULT 0,
    `midterm_score`			FLOAT DEFAULT 0,
    `final_score`			FLOAT DEFAULT 0,
-    FOREIGN KEY(`subject_id`) REFERENCES `Subject`(`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-    FOREIGN KEY(`user_id`) REFERENCES `User`(`user_id`) ON DELETE CASCADE ON UPDATE CASCADE
+   `created_date`			DATETIME DEFAULT NOW(),
+    FOREIGN KEY(`subject_id`) REFERENCES `Subject`(`id`) ON DELETE SET NULL ON UPDATE SET NULL,
+    FOREIGN KEY(`user_id`) REFERENCES `User`(`user_id`) ON DELETE SET NULL ON UPDATE SET NULL
 );
 
 DROP TABLE IF EXISTS `Parent`; -- Phụ huynh
@@ -97,6 +101,6 @@ CREATE TABLE IF NOT EXISTS `Parent` (
     `phone_number`			VARCHAR(15) UNIQUE,
     `job` 					VARCHAR(50),
     `relationship` 			VARCHAR(20),
-    `user_id` 				INT,
-    FOREIGN KEY(`user_id`) REFERENCES `User`(`user_id`) ON DELETE CASCADE ON UPDATE CASCADE
+    `user_id` 				BIGINT,
+    FOREIGN KEY(`user_id`) REFERENCES `User`(`user_id`) ON DELETE SET NULL ON UPDATE SET NULL
 );
