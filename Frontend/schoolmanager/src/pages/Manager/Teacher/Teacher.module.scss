@@ -129,8 +129,8 @@
 }
 
 .addition-form {
-    height: 430px;
-    width: 450px;
+    height: 480px;
+    width: 500px;
     position: fixed;
     top: 45%;
     left: 50%;
@@ -196,7 +196,7 @@
         .btn {
             grid-column: span 2;
             text-align: center;
-            margin-top: 20px;
+            margin-top: 10px;
         }
 
         .btn-add,
@@ -213,6 +213,14 @@
             &:hover {
                 background: linear-gradient(0deg, rgba(0, 0, 0, 0.344), rgba(0, 0, 0, 0.344)), var(--primary);
             }
+        }
+
+        .user-Error {
+            font-size: 1.1rem;
+            color: red;
+            grid-column: span 2;
+            text-align: start;
+            line-height: 1px;
         }
     }
 }
@@ -304,8 +312,8 @@
 }
 
 .update-form{
-    height: 450px;
-    width: 450px;
+    height: 470px;
+    width: 500px;
     position: fixed;
     top: 45%;
     left: 50%;
@@ -371,7 +379,7 @@
         .btn {
             grid-column: span 2;
             text-align: center;
-            margin-top: 20px;
+            margin-top: 10px;
         }
 
         .btn-add,
@@ -388,6 +396,14 @@
             &:hover {
                 background: linear-gradient(0deg, rgba(0, 0, 0, 0.344), rgba(0, 0, 0, 0.344)), var(--primary);
             }
+        }
+
+        .user-Error {
+            font-size: 1.1rem;
+            color: red;
+            grid-column: span 2;
+            text-align: start;
+            line-height: 1px;
         }
     }
 }

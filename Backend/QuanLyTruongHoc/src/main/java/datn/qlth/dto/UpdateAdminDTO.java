@@ -6,6 +6,7 @@ import org.hibernate.validator.constraints.Length;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
+import datn.qlth.entity.Enum.Gender;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
@@ -33,4 +34,6 @@ public class UpdateAdminDTO {
 	private Date birthDay;
 	
 	private String homeTown;
+	
+	private Gender gender;
 }

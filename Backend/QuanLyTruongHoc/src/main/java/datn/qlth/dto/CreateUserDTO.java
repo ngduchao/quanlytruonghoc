@@ -6,6 +6,7 @@ import org.hibernate.validator.constraints.Length;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
+import datn.qlth.entity.Enum.Gender;
 import datn.qlth.entity.Enum.Role;
 import datn.qlth.entity.Enum.UserStatus;
 import datn.qlth.validation.classroom.ClassroomIDExists;
@@ -65,6 +66,9 @@ public class CreateUserDTO {
 	
 	@Pattern(regexp = "ADMIN|USER", message = "The role must be ADMIN or USER")
 	private Role role;
+	
+	@Pattern(regexp = "MALE|FEMALE", message = "The role must be MALE or FEMALE")
+	private Gender gender;
 	
 	@ClassroomIDExists
 	private Integer classRoomID;

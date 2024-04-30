@@ -6,6 +6,7 @@ import org.hibernate.validator.constraints.Length;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
+import datn.qlth.entity.Enum.Gender;
 import datn.qlth.validation.classroom.ClassroomIDExists;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Pattern;
@@ -34,6 +35,8 @@ public class UpdateUserDTO {
 	private Date birthDay;
 	
 	private String homeTown;
+	
+	private Gender gender;
 	
 	@ClassroomIDExists
 	private Integer classRoomID;

@@ -14,4 +14,6 @@ public interface RegistrationSubjectRepository extends JpaRepository<Registratio
 	public List<RegistrationSubject> findByUser(User user);
 	
 	public List<RegistrationSubject> findBySubject(Subject subject);
-}
+	
+	public boolean existsByUserAndSubject(User user, Subject subject);
+}	

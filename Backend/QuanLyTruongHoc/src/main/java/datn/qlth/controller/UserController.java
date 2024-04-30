@@ -40,6 +40,7 @@ import datn.qlth.dto.filter.UserFilterForm;
 import datn.qlth.entity.RegistrationSubject;
 import datn.qlth.entity.User;
 import datn.qlth.service.UserService;
+import datn.qlth.validation.user.UserCodeExists;
 import datn.qlth.validation.user.UserIDExists;
 import datn.qlth.validation.user.UsernameExists;
 
@@ -112,6 +113,16 @@ public class UserController {
 	public ResponseEntity<?> getUserByUsername(@RequestParam @UsernameExists String username){
 		
 		User user = service.getUserByUsername(username);
+		
+		UserDTO dto = modelMapper.map(user, UserDTO.class);
+		
+		return new ResponseEntity<>(dto, HttpStatus.OK);
+	}
+	
+	@GetMapping("/get-user-by-userCode")
+	public ResponseEntity<?> getUserByUserCode(@RequestParam(name = "userCode") @UserCodeExists String userCode){
+		
+		User user = service.getUserByUserCode(userCode);
 		
 		UserDTO dto = modelMapper.map(user, UserDTO.class);
 		

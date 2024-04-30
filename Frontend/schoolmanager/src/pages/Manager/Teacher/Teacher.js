@@ -14,6 +14,7 @@ import { format } from "date-fns";
 import toast, { Toaster } from "react-hot-toast";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
+import ReactPaginate from "react-paginate";
 
 import SubHeader from "../SubHeader/SubHeader";
 import styles from "./Teacher.module.scss";
@@ -30,7 +31,6 @@ import {
     updateTeacherAction,
 } from "../../../redux/actions/teacherAction";
 import teacherApi from "../../../services/api/teacherApi";
-import ReactPaginate from "react-paginate";
 
 const cx = classNames.bind(styles);
 
@@ -182,6 +182,50 @@ function Teachers(props) {
         isAscendingTeacherName,
     ]);
 
+    const isValidEmail = (email) => {
+        const emailRegex = /^[\w.%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+        return emailRegex.test(email);
+    };
+
+    const isValidTeacherCode = (teacherCode) => {
+        return teacherCode.length >= 6 && teacherCode.length <= 20;
+    };
+
+    const isValidPhoneNumber = (phoneNumber) => {
+        var vnf_regex = /((09|03|07|08|05)+([0-9]{8})\b)/g;
+        return vnf_regex.test(phoneNumber);
+    };
+
+    const isValidBirthDay = (birthDay) => {
+        let yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+
+        // Chuyển đổi cả hai ngày về đầu ngày để so sánh
+        let birthDayDate = new Date(birthDay);
+        birthDayDate.setHours(0, 0, 0, 0);
+        yesterday.setHours(0, 0, 0, 0);
+
+        // So sánh ngày sinh với ngày hôm qua
+        if (birthDayDate.getTime() > yesterday.getTime()) {
+            return 0; // Ngày sinh là ngày hôm qua
+        } else {
+            return 1; // Ngày sinh không phải là ngày hôm qua
+        }
+    };
+
+    //Validate
+    const [teacherCodeError, setTeacherCodeError] = useState("");
+    const [emailError, setEmailError] = useState("");
+    const [phoneNumberError, setPhoneNumberError] = useState("");
+    const [birthDayError, setBirthDayError] = useState("");
+
+    const handleFocus = () => {
+        setTeacherCodeError("");
+        setEmailError("");
+        setPhoneNumberError("");
+        setBirthDayError("");
+    };
+
     const [addForm, setAddForm] = useState({
         teacherCode: "",
         teacherName: "",
@@ -189,7 +233,7 @@ function Teachers(props) {
         phoneNumber: "",
         birthDay: "",
         homeTown: "",
-        phonespecializeLevelNumber: "",
+        specializeLevel: "",
     });
 
     const handleChangeSelected = (e) => {
@@ -215,27 +259,103 @@ function Teachers(props) {
 
     const handleSubmitCreate = async (e) => {
         e.preventDefault();
+        let isValid = true;
         try {
-            const data = await teacherApi.createTeacher(addForm);
-            props.addTeacherAction(data);
+            const teacherCode = await teacherApi.checkTeacherCodeExist(
+                addForm.teacherCode.trim()
+            );
+            if (!isValidTeacherCode(addForm.teacherCode.trim())) {
+                setTeacherCodeError(
+                    "Mã giáo viên không hợp lệ! (từ 6 đến 20 kí tự)"
+                );
+                isValid = false;
+            } else if (teacherCode) {
+                setTeacherCodeError("Mã giáo viên đã tồn tại!");
+                isValid = false;
+            }
 
-            setAddForm({
-                teacherCode: "",
-                teacherName: "",
-                email: "",
-                phoneNumber: "",
-                birthDay: "",
-                homeTown: "",
-                phonespecializeLevelNumber: "",
-            });
-            setShowAddForm(!showAddForm);
-            notify("Thêm mới thành công");
+            const email = await teacherApi.checkEmailExist(
+                addForm.email.trim()
+            );
+            if (!isValidEmail(addForm.email.trim())) {
+                // Kiểm tra tính hợp lệ của email
+                setEmailError("Email không hợp lệ!");
+                isValid = false;
+            } else if (email) {
+                setEmailError("Email đã tồn tại!");
+                isValid = false;
+            }
+
+            const phoneNumber = await teacherApi.checkPhoneNumberExist(
+                addForm.phoneNumber.trim()
+            );
+            if (!isValidPhoneNumber(addForm.phoneNumber.trim())) {
+                // Kiểm tra tính hợp lệ của sdt
+                setPhoneNumberError("Số điện thoại không hợp lệ!");
+                isValid = false;
+            } else if (phoneNumber) {
+                setPhoneNumberError("Số điện thoại đã tồn tại!");
+                isValid = false;
+            }
+
+            if (isValidBirthDay(addForm.birthDay) === 0) {
+                setBirthDayError("Ngày sinh không hợp lệ!");
+                isValid = false;
+            }
+
+            if (isValid) {
+                const data = await teacherApi.createTeacher(addForm);
+                props.addTeacherAction(data);
+
+                setAddForm({
+                    teacherCode: "",
+                    teacherName: "",
+                    email: "",
+                    phoneNumber: "",
+                    birthDay: "",
+                    homeTown: "",
+                    specializeLevel: "",
+                });
+                setShowAddForm(!showAddForm);
+                notify("Thêm mới thành công");
+
+                handleFocus();
+            }
         } catch (error) {
             console.error("Error creating data: ", error);
+
+            if (error.status === 500) {
+                notify("Thêm mới bại!");
+            }
         }
     };
 
+    const handleCloseModalAdd = () => {
+        setShowAddForm(!showAddForm);
+        setAddForm({
+            teacherCode: "",
+            teacherName: "",
+            email: "",
+            phoneNumber: "",
+            birthDay: "",
+            homeTown: "",
+            specializeLevel: "",
+        });
+        handleFocus();
+    };
+
     const [updateForm, setUpdateForm] = useState({
+        teacherCode: "",
+        teacherName: "",
+        email: "",
+        phoneNumber: "",
+        birthDay: "",
+        homeTown: "",
+        specializeLevel: "",
+        teacherID: "",
+    });
+
+    const [checkUpdateForm, setCheckUpdateForm] = useState({
         teacherCode: "",
         teacherName: "",
         email: "",
@@ -251,6 +371,16 @@ function Teachers(props) {
             ...updateForm,
             specializeLevel: e.target.value, // Gán giá trị của thẻ option vào addForm
         });
+    };
+
+    const handleChange = (e) => {
+        setUpdateForm({
+            ...updateForm,
+            [e.target.name]: e.target.value,
+        });
+        if (e.target.name === "specializeLevel") {
+            handleChangeSelected(e); // Cập nhật giá trị từ option
+        }
     };
 
     const handleShowUpdateModel = (
@@ -273,40 +403,112 @@ function Teachers(props) {
             specializeLevel,
             teacherID,
         });
-        setShowUpdateForm(!showUpdateForm);
-    };
-
-    const handleChange = (e) => {
-        setUpdateForm({
-            ...updateForm,
-            [e.target.name]: e.target.value,
+        setCheckUpdateForm({
+            teacherCode,
+            teacherName,
+            email,
+            phoneNumber,
+            birthDay,
+            homeTown,
+            specializeLevel,
+            teacherID,
         });
-        if (e.target.name === "specializeLevel") {
-            handleChangeSelected(e); // Cập nhật giá trị từ option
-        }
+        setShowUpdateForm(!showUpdateForm);
     };
 
     const handleSubmitUpdate = async (e) => {
         e.preventDefault();
+        let isValid = true;
         try {
-            const data = await teacherApi.updateTeacher(updateForm);
-            props.updateTeacherAction(data);
+            const teacherCode = await teacherApi.checkTeacherCodeExist(
+                updateForm.teacherCode.trim()
+            );
+            if (!isValidTeacherCode(updateForm.teacherCode.trim())) {
+                setTeacherCodeError(
+                    "Mã giáo viên không hợp lệ! (từ 6 đến 20 kí tự)"
+                );
+                isValid = false;
+            } else if (
+                teacherCode &&
+                updateForm.teacherCode !== checkUpdateForm.teacherCode
+            ) {
+                setTeacherCodeError("Mã giáo viên đã tồn tại!");
+                isValid = false;
+            }
 
-            setUpdateForm({
-                teacherCode: "",
-                teacherName: "",
-                email: "",
-                phoneNumber: "",
-                birthDay: "",
-                homeTown: "",
-                specializeLevel: "",
-                teacherID: "",
-            });
-            setShowUpdateForm(!showUpdateForm);
-            notify("Cập nhật thành công");
+            const email = await teacherApi.checkEmailExist(
+                updateForm.email.trim()
+            );
+            if (!isValidEmail(updateForm.email.trim())) {
+                // Kiểm tra tính hợp lệ của email
+                setEmailError("Email không hợp lệ!");
+                isValid = false;
+            } else if (email && checkUpdateForm.email !== updateForm.email) {
+                setEmailError("Email đã tồn tại!");
+                isValid = false;
+            }
+
+            const phoneNumber = await teacherApi.checkPhoneNumberExist(
+                updateForm.phoneNumber.trim()
+            );
+            if (!isValidPhoneNumber(updateForm.phoneNumber.trim())) {
+                // Kiểm tra tính hợp lệ của sdt
+                setPhoneNumberError("Số điện thoại không hợp lệ!");
+                isValid = false;
+            } else if (
+                phoneNumber &&
+                checkUpdateForm.phoneNumber !== updateForm.phoneNumber
+            ) {
+                setPhoneNumberError("Số điện thoại đã tồn tại!");
+                isValid = false;
+            }
+
+            if (isValidBirthDay(updateForm.birthDay) === 0) {
+                setBirthDayError("Ngày sinh không hợp lệ!");
+                isValid = false;
+            }
+
+            if (isValid) {
+                const data = await teacherApi.updateTeacher(updateForm);
+                props.updateTeacherAction(data);
+
+                setUpdateForm({
+                    teacherCode: "",
+                    teacherName: "",
+                    email: "",
+                    phoneNumber: "",
+                    birthDay: "",
+                    homeTown: "",
+                    specializeLevel: "",
+                    teacherID: "",
+                });
+                setShowUpdateForm(!showUpdateForm);
+                notify("Cập nhật thành công");
+
+                handleFocus();
+            }
         } catch (error) {
             console.error("Error updating data: ", error);
+
+            if (error.status === 500) {
+                notify("Cập nhật mới bại!");
+            }
         }
+    };
+
+    const handleCloseModalUpdate = () => {
+        setShowUpdateForm(!showUpdateForm);
+        setUpdateForm({
+            teacherCode: "",
+            teacherName: "",
+            email: "",
+            phoneNumber: "",
+            birthDay: "",
+            homeTown: "",
+            specializeLevel: "",
+            teacherID: "",
+        });
+        handleFocus();
     };
 
     const [teacherDelete, setTeacherDelete] = useState({
@@ -604,12 +806,13 @@ function Teachers(props) {
                             name="teacherCode"
                             value={addForm.teacherCode}
                             onChange={handleAddChange}
+                            onFocus={handleFocus}
                             required
                         />
-                        <span
-                            className={cx("teacherCode-error-message")}
-                            hidden
-                        ></span>
+                        <label className={cx("user-Error")}>
+                            {teacherCodeError}
+                        </label>
+
                         <label className={cx("label")}>Tên giáo viên</label>
                         <input
                             type="text"
@@ -618,12 +821,10 @@ function Teachers(props) {
                             name="teacherName"
                             value={addForm.teacherName}
                             onChange={handleAddChange}
+                            onFocus={handleFocus}
                             required
                         />
-                        <span
-                            className={cx("teacherName-error-message")}
-                            hidden
-                        ></span>
+                        <label className={cx("user-Error")}></label>
 
                         <label className={cx("label")}>Email</label>
                         <input
@@ -633,12 +834,10 @@ function Teachers(props) {
                             name="email"
                             value={addForm.email}
                             onChange={handleAddChange}
+                            onFocus={handleFocus}
                             required
                         />
-                        <span
-                            className={cx("email-error-message")}
-                            hidden
-                        ></span>
+                        <label className={cx("user-Error")}>{emailError}</label>
 
                         <label className={cx("label")}>Số điện thoại</label>
                         <input
@@ -648,23 +847,29 @@ function Teachers(props) {
                             name="phoneNumber"
                             value={addForm.phoneNumber}
                             onChange={handleAddChange}
+                            onFocus={handleFocus}
                             required
                         />
-                        <span
-                            className={cx("phoneNumber-error-message")}
-                            hidden
-                        ></span>
+                        <label className={cx("user-Error")}>
+                            {phoneNumberError}
+                        </label>
 
                         <label className={cx("label")}>Ngày sinh</label>
                         <input
                             type="date"
                             placeholder="Nhập ngày sinh"
+                            data-date-format="DD MMMM YYYY"
                             className={cx("input-text")}
                             name="birthDay"
                             value={addForm.birthDay}
                             onChange={handleAddChange}
+                            onFocus={handleFocus}
                             required
                         />
+
+                        <label className={cx("user-Error")}>
+                            {birthDayError}
+                        </label>
 
                         <label className={cx("label")}>Quê quán</label>
                         <input
@@ -674,8 +879,10 @@ function Teachers(props) {
                             name="homeTown"
                             value={addForm.homeTown}
                             onChange={handleAddChange}
+                            onFocus={handleFocus}
                             required
                         />
+                        <label className={cx("user-Error")}></label>
 
                         <label className={cx("label")}>Trình độ</label>
                         <select
@@ -683,6 +890,7 @@ function Teachers(props) {
                             name="specializeLevel"
                             value={addForm.specializeLevel || ""}
                             onChange={handleChangeSelected}
+                            onFocus={handleFocus}
                             required
                         >
                             <option value={""}>Chọn Trình Độ</option>
@@ -695,9 +903,7 @@ function Teachers(props) {
                             <button className={cx("btn-add")}>Thêm</button>
                             <button
                                 className={cx("btn-cancel")}
-                                onClick={() => {
-                                    setShowAddForm(!showAddForm);
-                                }}
+                                onClick={handleCloseModalAdd}
                             >
                                 Hủy
                             </button>
@@ -720,11 +926,12 @@ function Teachers(props) {
                             name="teacherCode"
                             value={updateForm.teacherCode}
                             onChange={handleChange}
+                            onFocus={handleFocus}
                         />
-                        <span
-                            className={cx("teacherCode-error-message")}
-                            hidden
-                        ></span>
+                        <label className={cx("user-Error")}>
+                            {teacherCodeError}
+                        </label>
+
                         <label htmlFor="teacherName" className={cx("label")}>
                             Tên giáo viên
                         </label>
@@ -735,11 +942,9 @@ function Teachers(props) {
                             name="teacherName"
                             value={updateForm.teacherName}
                             onChange={handleChange}
+                            onFocus={handleFocus}
                         />
-                        <span
-                            className={cx("teacherName-error-message")}
-                            hidden
-                        ></span>
+                        <label className={cx("user-Error")}></label>
 
                         <label htmlFor="email" className={cx("label")}>
                             Email
@@ -751,11 +956,9 @@ function Teachers(props) {
                             name="email"
                             value={updateForm.email}
                             onChange={handleChange}
+                            onFocus={handleFocus}
                         />
-                        <span
-                            className={cx("email-error-message")}
-                            hidden
-                        ></span>
+                        <label className={cx("user-Error")}>{emailError}</label>
 
                         <label htmlFor="phoneNumber" className={cx("label")}>
                             Số điện thoại
@@ -767,11 +970,11 @@ function Teachers(props) {
                             name="phoneNumber"
                             value={updateForm.phoneNumber}
                             onChange={handleChange}
+                            onFocus={handleFocus}
                         />
-                        <span
-                            className={cx("phoneNumber-error-message")}
-                            hidden
-                        ></span>
+                        <label className={cx("user-Error")}>
+                            {phoneNumberError}
+                        </label>
 
                         <label htmlFor="birthDay" className={cx("label")}>
                             Ngày sinh
@@ -779,11 +982,17 @@ function Teachers(props) {
                         <input
                             type="date"
                             placeholder="Nhập ngày sinh"
+                            data-date-format="DD MMMM YYYY"
                             className={cx("input-text")}
                             name="birthDay"
                             value={updateForm.birthDay}
                             onChange={handleChange}
+                            onFocus={handleFocus}
                         />
+
+                        <label className={cx("user-Error")}>
+                            {birthDayError}
+                        </label>
 
                         <label htmlFor="homeTown" className={cx("label")}>
                             Quê quán
@@ -795,7 +1004,9 @@ function Teachers(props) {
                             name="homeTown"
                             value={updateForm.homeTown}
                             onChange={handleChange}
+                            onFocus={handleFocus}
                         />
+                        <label className={cx("user-Error")}></label>
 
                         <label
                             htmlFor="specializeLevel"
@@ -808,7 +1019,7 @@ function Teachers(props) {
                             name="specializeLevel"
                             value={updateForm.specializeLevel || ""}
                             onChange={handleChangeSelectedUpdate}
-                            required
+                            onFocus={handleFocus}
                         >
                             <option value={""}>Chọn Trình Độ</option>
                             <option value={"TIENSI"}>Tiến Sĩ</option>
@@ -820,9 +1031,7 @@ function Teachers(props) {
                             <button className={cx("btn-add")}>Sửa</button>
                             <button
                                 className={cx("btn-cancel")}
-                                onClick={() => {
-                                    setShowUpdateForm(!showUpdateForm);
-                                }}
+                                onClick={handleCloseModalUpdate}
                             >
                                 Hủy
                             </button>

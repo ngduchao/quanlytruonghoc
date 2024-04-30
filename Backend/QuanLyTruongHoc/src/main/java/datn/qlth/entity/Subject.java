@@ -33,7 +33,7 @@ public class Subject {
 	@Column(name = "`subject_code`", length = 30, unique = true, nullable = false)
 	private String subjectCode;
 	
-	@Column(name = "subject_name", length = 100, unique = true, nullable = false)
+	@Column(name = "subject_name", length = 100, nullable = false)
 	private String subjectName;
 	
 	@Column(name = "number_of_credit", nullable = false)

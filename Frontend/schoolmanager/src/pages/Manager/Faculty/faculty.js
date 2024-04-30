@@ -13,6 +13,7 @@ import { useCallback, useEffect, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
+import ReactPaginate from "react-paginate";
 
 import styles from "./Faculty.module.scss";
 import SubHeader from "../SubHeader/SubHeader";
@@ -29,7 +30,6 @@ import {
     updateFacultyAction,
 } from "../../../redux/actions/facultyAction";
 import facultyApi from "../../../services/api/facultyApi";
-import ReactPaginate from "react-paginate";
 
 const cx = classNames.bind(styles);
 
@@ -157,6 +157,22 @@ function Faculty(props) {
         isAscendingFacultyName,
     ]);
 
+    const isValidFacultyCode = (facultyCode) => {
+        return facultyCode.length >= 6 && facultyCode.length <= 30;
+    };
+
+    const isValidFacultyName = (facultyName) => {
+        return facultyName.length >= 6 && facultyName.length <= 100;
+    };
+
+    const [facultyCodeError, setFacultyCodeError] = useState("");
+    const [facultyNameError, setFacultyNameError] = useState("");
+
+    const handleFocus = () => {
+        setFacultyCodeError("");
+        setFacultyNameError("");
+    };
+
     const [addForm, setAddForm] = useState({
         facultyCode: "",
         facultyName: "",
@@ -175,19 +191,65 @@ function Faculty(props) {
 
     const handleSubmitCreate = async (e) => {
         e.preventDefault();
+        let isValid = true;
         try {
-            const data = await facultyApi.createFaculty(addForm);
-            props.addFacultyAction(data);
+            const facultyCode = await facultyApi.checkFacultyCodeExist(
+                addForm.facultyCode.trim()
+            );
+            const facultyName = await facultyApi.checkFacultyNameExist(
+                addForm.facultyName.trim()
+            );
+            if (!isValidFacultyCode(addForm.facultyCode.trim())) {
+                setFacultyCodeError(
+                    "Mã khoa không hợp lệ! (từ 6 đến 30 kí tự)"
+                );
+                isValid = false;
+            }
+            if (facultyCode) {
+                setFacultyCodeError("Mã khoa đã tồn tại!");
+                isValid = false;
+            }
 
-            setAddForm({
-                facultyCode: "",
-                facultyName: "",
-            });
-            setShowAddForm(!showAddForm);
-            notify("Thêm mới thành công");
+            if (!isValidFacultyName(addForm.facultyName.trim())) {
+                setFacultyNameError(
+                    "Tên khoa không hợp lệ! (từ 6 đến 100 kí tự)"
+                );
+                isValid = false;
+            }
+            if (facultyName) {
+                setFacultyNameError("Tên khoa đã tồn tại!");
+                isValid = false;
+            }
+
+            if (isValid) {
+                const data = await facultyApi.createFaculty(addForm);
+                props.addFacultyAction(data);
+
+                setAddForm({
+                    facultyCode: "",
+                    facultyName: "",
+                });
+                setShowAddForm(!showAddForm);
+                notify("Thêm mới thành công!");
+
+                handleFocus();
+            }
         } catch (error) {
             console.error("Error creating data: ", error);
+
+            if (error.status === 500) {
+                notify("Thêm mới thất bại!");
+            }
         }
+    };
+
+    const handleCloseModalAdd = () => {
+        setShowAddForm(!showAddForm);
+        setAddForm({
+            facultyCode: "",
+            facultyName: "",
+        });
+        handleFocus();
     };
 
     const [updateForm, setUpdateForm] = useState({
@@ -196,8 +258,19 @@ function Faculty(props) {
         facultyID: "",
     });
 
+    const [checkUpdateForm, setCheckUpdateForm] = useState({
+        facultyCode: "",
+        facultyName: "",
+        facultyID: "",
+    });
+
     const handleShowUpdateModel = (facultyCode, facultyName, facultyID) => {
         setUpdateForm({
+            facultyCode,
+            facultyName,
+            facultyID,
+        });
+        setCheckUpdateForm({
             facultyCode,
             facultyName,
             facultyID,
@@ -214,20 +287,71 @@ function Faculty(props) {
 
     const handleSubmitUpdate = async (e) => {
         e.preventDefault();
+        let isValid = true;
         try {
-            const data = await facultyApi.updateFaculty(updateForm);
-            props.updateFacultyAction(data);
+            const facultyCode = await facultyApi.checkFacultyCodeExist(
+                updateForm.facultyCode.trim()
+            );
+            const facultyName = await facultyApi.checkFacultyNameExist(
+                updateForm.facultyName.trim()
+            );
+            if (checkUpdateForm.facultyCode !== updateForm.facultyCode) {
+                if (!isValidFacultyCode(updateForm.facultyCode.trim())) {
+                    setFacultyCodeError(
+                        "Mã khoa không hợp lệ! (từ 6 đến 30 kí tự)"
+                    );
+                    isValid = false;
+                }
+                if (facultyCode) {
+                    setFacultyCodeError("Mã khoa đã tồn tại!");
+                    isValid = false;
+                }
+            }
 
-            setUpdateForm({
-                facultyCode: "",
-                facultyName: "",
-                facultyID: "",
-            });
-            setShowUpdateForm(!showUpdateForm);
-            notify("Cập nhật thành công");
+            if (checkUpdateForm.facultyName !== updateForm.facultyName) {
+                if (!isValidFacultyName(updateForm.facultyName.trim())) {
+                    setFacultyNameError(
+                        "Tên khoa không hợp lệ! (từ 6 đến 100 kí tự)"
+                    );
+                    isValid = false;
+                }
+                if (facultyName) {
+                    setFacultyNameError("Tên khoa đã tồn tại!");
+                    isValid = false;
+                }
+            }
+
+            if (isValid) {
+                const data = await facultyApi.updateFaculty(updateForm);
+                props.updateFacultyAction(data);
+
+                setUpdateForm({
+                    facultyCode: "",
+                    facultyName: "",
+                    facultyID: "",
+                });
+                setShowUpdateForm(!showUpdateForm);
+                notify("Cập nhật thành công");
+
+                handleFocus();
+            }
         } catch (error) {
             console.error("Error updating data: ", error);
+
+            if (error.status === 500) {
+                notify("Cập nhật thất bại!");
+            }
         }
+    };
+
+    const handleCloseModalUpdate = () => {
+        setShowUpdateForm(!showUpdateForm);
+        setUpdateForm({
+            facultyCode: "",
+            facultyName: "",
+            facultyID: "",
+        });
+        handleFocus();
     };
 
     const [facultyDelete, setFacultyDelete] = useState({
@@ -462,12 +586,12 @@ function Faculty(props) {
                             className={cx("input-text")}
                             value={addForm.facultyCode}
                             onChange={handleAddChange}
+                            onFocus={handleFocus}
                             required
                         />
-                        <span
-                            className={cx("facultyCode-error-message")}
-                            hidden
-                        ></span>
+                        <label className={cx("user-Error")}>
+                            {facultyCodeError}
+                        </label>
                         <label className={cx("label")}>Tên khoa</label>
                         <input
                             type="text"
@@ -476,20 +600,18 @@ function Faculty(props) {
                             className={cx("input-text")}
                             value={addForm.facultyName}
                             onChange={handleAddChange}
+                            onFocus={handleFocus}
                             required
                         />
-                        <span
-                            className={cx("facultyName-error-message")}
-                            hidden
-                        ></span>
+                        <label className={cx("user-Error")}>
+                            {facultyNameError}
+                        </label>
 
                         <div className={cx("btn")}>
                             <button className={cx("btn-add")}>Thêm</button>
                             <button
                                 className={cx("btn-cancel")}
-                                onClick={() => {
-                                    setShowAddForm(!showAddForm);
-                                }}
+                                onClick={handleCloseModalAdd}
                             >
                                 Hủy
                             </button>
@@ -511,11 +633,11 @@ function Faculty(props) {
                             className={cx("input-text")}
                             value={updateForm.facultyCode}
                             onChange={handleChange}
+                            onFocus={handleFocus}
                         />
-                        <span
-                            className={cx("facultyCode-error-message")}
-                            hidden
-                        ></span>
+                        <label className={cx("user-Error")}>
+                            {facultyCodeError}
+                        </label>
                         <label htmlFor="facultyName" className={cx("label")}>
                             Tên khoa
                         </label>
@@ -526,11 +648,11 @@ function Faculty(props) {
                             className={cx("input-text")}
                             value={updateForm.facultyName}
                             onChange={handleChange}
+                            onFocus={handleFocus}
                         />
-                        <span
-                            className={cx("facultyName-error-message")}
-                            hidden
-                        ></span>
+                        <label className={cx("user-Error")}>
+                            {facultyNameError}
+                        </label>
 
                         <div className={cx("btn")}>
                             <button type="submit" className={cx("btn-add")}>
@@ -538,9 +660,7 @@ function Faculty(props) {
                             </button>
                             <button
                                 className={cx("btn-cancel")}
-                                onClick={() => {
-                                    setShowUpdateForm(!showUpdateForm);
-                                }}
+                                onClick={handleCloseModalUpdate}
                             >
                                 Hủy
                             </button>

@@ -43,6 +43,7 @@ const updateUser = (values) => {
         phoneNumber: values.phoneNumber,
         birthDay: values.birthDay,
         homeTown: values.homeTown,
+        gender: values.gender,
         classRoomID: values.classRoomID,
         userID: values.userID,
     };
@@ -57,6 +58,7 @@ const updateAdmin = (values) => {
         phoneNumber: values.phoneNumber,
         birthDay: values.birthDay,
         homeTown: values.homeTown,
+        gender: values.gender,
         userID: values.userID,
     };
     return Api.put(`${url}/update-admin/${values.userID}`, body);
@@ -77,6 +79,7 @@ const createUser = (values) => {
         phoneNumber: values.phoneNumber,
         birthDay: values.birthDay,
         homeTown: values.homeTown,
+        gender: values.gender,
         role: values.role,
         classRoomID: values.classRoomID,
         status: values.status,
@@ -96,6 +99,7 @@ const createAdmin = (values) => {
         phoneNumber: values.phoneNumber,
         birthDay: values.birthDay,
         homeTown: values.homeTown,
+        gender: values.gender,
         role: values.role,
         status: values.status,
     };
@@ -142,6 +146,19 @@ const getAllAdmins = (role = "ADMIN", search = "") => {
     return Api.get(`${url}`, { params: parameters });
 };
 
+const getUserByUserCode = (userCode) => {
+    const parameters = { userCode };
+
+    return Api.get(`${url}/get-user-by-userCode`, { params: parameters });
+};
+
+const getUserByUsername = (username) => {
+    const parameters = {
+        username,
+    };
+    return Api.get(`${url}/get-user-by-username`, { params: parameters });
+};
+
 const api = {
     getAllUsers,
     getById,
@@ -158,6 +175,8 @@ const api = {
     checkUserCodeExist,
     checkUsernameExist,
     checkPhoneNumberExist,
+    getUserByUserCode,
+    getUserByUsername,
 };
 
 export default api;

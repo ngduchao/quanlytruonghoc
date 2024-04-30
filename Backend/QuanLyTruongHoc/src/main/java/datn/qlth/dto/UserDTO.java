@@ -4,6 +4,7 @@ import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
+import datn.qlth.entity.Enum.Gender;
 import datn.qlth.entity.Enum.Role;
 import datn.qlth.entity.Enum.UserStatus;
 import lombok.Data;
@@ -33,6 +34,8 @@ public class UserDTO {
 	private Date birthDay;
 	
 	private String homeTown;
+	
+	private Gender gender;
 	
     private Role role;
 	

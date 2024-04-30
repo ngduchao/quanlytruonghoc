@@ -13,4 +13,6 @@ public class UserFilterForm {
 	private Role role;
 	
 	private String classRoomName;
+	
+	private Integer classRoomID;
 }

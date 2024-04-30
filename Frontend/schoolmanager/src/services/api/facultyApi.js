@@ -49,12 +49,22 @@ const deleteFaculty = (id) => {
     return Api.delete(`${url}/${id}`);
 };
 
+const checkFacultyCodeExist = (facultyCode) => {
+    return Api.get(`${url}/facultyCode/${facultyCode}`);
+};
+
+const checkFacultyNameExist = (facultyName) => {
+    return Api.get(`${url}/facultyName/${facultyName}`);
+};
+
 const api = {
     getAllFaculties,
     createFaculty,
     updateFaculty,
     getById,
     deleteFaculty,
+    checkFacultyCodeExist,
+    checkFacultyNameExist,
 };
 
 export default api;

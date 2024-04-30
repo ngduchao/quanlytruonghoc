@@ -14,6 +14,10 @@ import {
     Users,
     Teacher,
     Subject,
+    AdminDetailClassroom,
+    AdminDetailSubject,
+    StudyResult,
+    RegistrationSubject,
 } from "../pages/Manager";
 import ChangePassword from "../pages/Auth/ChangePassword/changePassword";
 import Introduce from "../pages/Introduce/Introduce";
@@ -103,5 +107,25 @@ export const privateRoutes = [
         path: config.routes.changePassword,
         component: withAuth(ChangePassword),
         layout: null,
+    },
+    {
+        path: config.routes.adminDetailClassRoom,
+        component: withAuth(AdminDetailClassroom),
+        layout: ManagerLayout,
+    },
+    {
+        path: config.routes.adminDetailSubject,
+        component: withAuth(AdminDetailSubject),
+        layout: ManagerLayout,
+    },
+    {
+        path: config.routes.studyResult,
+        component: withAuth(StudyResult),
+        layout: DefaultLayout,
+    },
+    {
+        path: config.routes.registrationSubject,
+        component: withAuth(RegistrationSubject),
+        layout: DefaultLayout,
     },
 ];

@@ -64,7 +64,16 @@ public class ClassRoomController {
 		List<ClassRoomDTO> dtos = modelMapper.map(entityPages.getContent(), new TypeToken<List<ClassRoomDTO>>() {
 		}.getType());
 		
-		Page<ClassRoomDTO> dtoPage = new PageImpl<>(dtos, pageable, entityPages.getTotalElements());
+		List<ClassRoomDTO> dtos2 = dtos.stream().map(e -> {
+			
+			ClassRoom classRoom = service.getClassRoomByID(e.getClassRoomID());
+			
+			e.setQuantity(classRoom.getUsers().size());
+			
+			return e;
+		}).toList();
+		
+		Page<ClassRoomDTO> dtoPage = new PageImpl<>(dtos2, pageable, entityPages.getTotalElements());
 		
 		return new ResponseEntity<>(dtoPage, HttpStatus.OK);
 	}
@@ -75,6 +84,8 @@ public class ClassRoomController {
 		ClassRoom classRoom = service.getClassRoomByID(ID);
 		
 		NumberOfStudentsInClass dto = modelMapper.map(classRoom, NumberOfStudentsInClass.class);
+		
+		dto.setQuantity(classRoom.getUsers().size());
 		
 		return new ResponseEntity<>(dto, HttpStatus.OK);
 	}
@@ -96,6 +107,8 @@ public class ClassRoomController {
 		
 		ClassRoomDTO dto = modelMapper.map(classRoom, ClassRoomDTO.class);
 		
+		dto.setQuantity(classRoom.getUsers().size());
+		
 		return new ResponseEntity<>(dto, HttpStatus.OK);
 	}
 	
@@ -105,6 +118,8 @@ public class ClassRoomController {
 		ClassRoom classRoom = service.updateClassRoom(ID, form);
 		
 		ClassRoomDTO dto = modelMapper.map(classRoom, ClassRoomDTO.class);
+		
+		dto.setQuantity(classRoom.getUsers().size());
 		
 		return new ResponseEntity<>(dto, HttpStatus.OK); 
 	}
@@ -176,5 +191,29 @@ public class ClassRoomController {
 		
 		return new ResponseEntity<>("Delete Teacher In Class Successfully!", HttpStatus.OK); 
 		
+	}
+	
+	@GetMapping(value = "/classRoomCode/{classRoomCode}")
+	public ResponseEntity<?> existsClassRoomEntityByClassRoomCode(@PathVariable(name = "classRoomCode") String classRoomCode){
+		
+		boolean result = service.isClassRoomExistsByClassRoomCode(classRoomCode);
+		
+		return new ResponseEntity<>(result, HttpStatus.OK);
+	}
+	
+	@GetMapping(value = "/classRoomName/{classRoomName}")
+	public ResponseEntity<?> existsClassRoomEntityByClassRoomName(@PathVariable(name = "classRoomName") String classRoomName){
+		
+		boolean result = service.isClassRoomExistsByClassRoomName(classRoomName);
+		
+		return new ResponseEntity<>(result, HttpStatus.OK);
+	}
+	
+	@GetMapping(value = "/classRoomNameAndCourse/{classRoomName}/{course}")
+	public ResponseEntity<?> existsClassRoomEntityByClassRoomNameAndCourse(@PathVariable(name = "classRoomName") String classRoomName, @PathVariable(name = "course") Integer course){
+		
+		boolean result = service.isClassRoomExistsByClassRoomNameAndCourse(classRoomName, course);
+		
+		return new ResponseEntity<>(result, HttpStatus.OK);
 	}
 }

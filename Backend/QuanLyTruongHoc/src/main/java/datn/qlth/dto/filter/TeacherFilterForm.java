@@ -11,4 +11,6 @@ import lombok.NoArgsConstructor;
 public class TeacherFilterForm {
 	
 	private SpecializeLevel specializeLevel;
+	
+	private Integer classRoomID;
 }

@@ -50,10 +50,6 @@ function Header() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    // console.log(currentUser);
-
-    // const fullNam
-
     const role = profile.role;
 
     const handleCurrentUser = () => {
@@ -123,7 +119,21 @@ function Header() {
                             QUẢN LÝ
                         </NavLink>
                     ) : (
-                        <div></div>
+                        <span>
+                            <NavLink
+                                className={cx("btn")}
+                                to={config.routes.studyResult}
+                            >
+                                KQ HỌC TẬP
+                            </NavLink>
+
+                            <NavLink
+                                className={cx("btn")}
+                                to={config.routes.registrationSubject}
+                            >
+                                ĐĂNG KÝ MÔN
+                            </NavLink>
+                        </span>
                     )}
                 </div>
 

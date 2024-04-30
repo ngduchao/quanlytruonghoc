@@ -14,4 +14,6 @@ public interface SubjectRepository extends JpaRepository<Subject, Integer>, JpaS
 	public boolean existsBySubjectCode(String subjectCode);
 	
 	public boolean existsBySubjectName(String subjectName);
+	
+	public boolean existsBySubjectCodeAndSubjectName(String subjectCode, String subjectName);
 }

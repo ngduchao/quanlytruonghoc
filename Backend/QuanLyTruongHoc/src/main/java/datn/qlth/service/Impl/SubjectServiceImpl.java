@@ -1,5 +1,7 @@
 package datn.qlth.service.Impl;
 
+import java.util.List;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -41,6 +43,12 @@ public class SubjectServiceImpl implements SubjectService{
 		Specification<Subject> where = SubjectSpecification.buildWhere(search, filter);
 		
 		return repository.findAll(where, pageable);
+	}
+	
+	@Override
+	public List<Subject> getListSubjects() {
+		
+		return repository.findAll();
 	}
 
 	@Override
@@ -148,4 +156,11 @@ public class SubjectServiceImpl implements SubjectService{
 	public boolean isSubjectExistsBySubjectName(String subjectName) {
 		return repository.existsBySubjectName(subjectName);
 	}
+
+	@Override
+	public boolean isSubjectExistsBySubjectCodeAndSubjectName(String subjectCode, String subjectName) {
+		return repository.existsBySubjectCodeAndSubjectName(subjectCode, subjectName);
+	}
+
+	
 }

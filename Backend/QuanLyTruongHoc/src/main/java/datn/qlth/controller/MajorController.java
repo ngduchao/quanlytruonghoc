@@ -124,4 +124,20 @@ public class MajorController {
 		
 		return new ResponseEntity<>(dtos, HttpStatus.OK);
 	}
+	
+	@GetMapping(value = "/majorCode/{majorCode}")
+	public ResponseEntity<?> existsMajorByMajorCode(@PathVariable(name = "majorCode") String majorCode){
+		
+		boolean result = service.isMajorExistsByMajorCode(majorCode);
+		
+		return new ResponseEntity<>(result, HttpStatus.OK);
+	}
+	
+	@GetMapping(value = "/majorName/{majorName}")
+	public ResponseEntity<?> existsMajorByMajorName(@PathVariable(name = "majorName") String majorName){
+		
+		boolean result = service.isMajorExistsByMajorName(majorName);
+		
+		return new ResponseEntity<>(result, HttpStatus.OK);
+	}
 }

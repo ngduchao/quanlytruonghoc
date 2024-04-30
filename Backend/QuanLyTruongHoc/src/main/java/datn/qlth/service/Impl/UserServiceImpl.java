@@ -73,7 +73,7 @@ public class UserServiceImpl implements UserService{
 		
 		ClassRoom classRoom = classRoomRepository.findById(form.getClassRoomID()).get();
 		
-		classRoom.setQuantity(classRoom.getQuantity() + 1);
+//		classRoom.setQuantity(classRoom.getQuantity() + 1);
 		
 		user.setClassRoom(classRoom);
 		
@@ -115,10 +115,10 @@ public class UserServiceImpl implements UserService{
 		if(form.getClassRoomID() != null) {
 			if(user.getClassRoom().getClassRoomID() != form.getClassRoomID()) {
 				
-				// lớp cũ -1 sv
-				user.getClassRoom().setQuantity(user.getClassRoom().getQuantity() - 1);
-				// lớp mới +1 sv
-				classRoom.setQuantity(classRoom.getQuantity() + 1);
+//				// lớp cũ -1 sv
+//				user.getClassRoom().setQuantity(user.getClassRoom().getQuantity() - 1);
+//				// lớp mới +1 sv
+//				classRoom.setQuantity(classRoom.getQuantity() + 1);
 
 				user.setClassRoom(classRoom);
 			}
@@ -133,12 +133,17 @@ public class UserServiceImpl implements UserService{
 			}
 		}
 		
+		if(form.getGender() == null) {
+			form.setGender(user.getGender());
+		}
+		
 		user.setEmail(form.getEmail());
 		user.setFirstName(form.getFirstName());
 		user.setLastName(form.getLastName());
 		user.setPhoneNumber(form.getPhoneNumber());
 		user.setBirthDay(form.getBirthDay());
 		user.setHomeTown(form.getHomeTown());
+		user.setGender(form.getGender());
 
 		repository.save(user);
 	}
@@ -148,10 +153,11 @@ public class UserServiceImpl implements UserService{
 		
 		User user = repository.findById(ID).get();
 		
-		if(user.getClassRoom() != null) {
-			ClassRoom classRoom = classRoomRepository.findById(user.getClassRoom().getClassRoomID()).get();
-			classRoom.setQuantity(classRoom.getQuantity() - 1);
-		}
+//		if(user.getClassRoom() != null) {
+//			ClassRoom classRoom = classRoomRepository.findById(user.getClassRoom().getClassRoomID()).get();
+//			classRoom.setQuantity(classRoom.getQuantity() - 1);
+//
+//		}
 		
 		repository.deleteById(ID);
 		
@@ -163,9 +169,9 @@ public class UserServiceImpl implements UserService{
 		
 		User user = repository.findByUsername(form.getUsername()).get();
 		
-		ClassRoom classRoom = classRoomRepository.findByClassRoomCode(form.getClassRoomCode());
+//		ClassRoom classRoom = classRoomRepository.findByClassRoomCode(form.getClassRoomCode());
 		
-		classRoom.setQuantity(classRoom.getQuantity() + 1);
+//		classRoom.setQuantity(classRoom.getQuantity() + 1);
 		
 //		user.setClassRoom(classRoom);
 		
@@ -308,6 +314,9 @@ public class UserServiceImpl implements UserService{
 		if(form.getHomeTown() == null || form.getHomeTown().isEmpty()) {
 			form.setHomeTown(user.getHomeTown());
 		}
+		if(form.getGender() == null) {
+			form.setGender(user.getGender());
+		}
 		
 		user.setEmail(form.getEmail());
 		user.setFirstName(form.getFirstName());
@@ -315,6 +324,7 @@ public class UserServiceImpl implements UserService{
 		user.setPhoneNumber(form.getPhoneNumber());
 		user.setBirthDay(form.getBirthDay());
 		user.setHomeTown(form.getHomeTown());
+		user.setGender(form.getGender());
 
 		return repository.save(user);
 	}
@@ -333,6 +343,11 @@ public class UserServiceImpl implements UserService{
 	public boolean isUserExistsByPhoneNumber(String phoneNumber) {
 		
 		return repository.existsByPhoneNumber(phoneNumber);
+	}
+
+	@Override
+	public User getUserByUserCode(String userCode) {
+		return repository.findByUserCode(userCode);
 	}
 
 }

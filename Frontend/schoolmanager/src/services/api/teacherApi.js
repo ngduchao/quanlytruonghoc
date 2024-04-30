@@ -66,12 +66,27 @@ const deleteTeacher = (id) => {
     return Api.delete(`${url}/${id}`);
 };
 
+const checkEmailExist = (email) => {
+    return Api.get(`${url}/email/${email}`);
+};
+
+const checkTeacherCodeExist = (teacherCode) => {
+    return Api.get(`${url}/teacherCode/${teacherCode}`);
+};
+
+const checkPhoneNumberExist = (phoneNumber) => {
+    return Api.get(`${url}/phoneNumber/${phoneNumber}`);
+};
+
 const api = {
     getAllTeachers,
     createTeacher,
     deleteTeacher,
     updateTeacher,
     getByID,
+    checkEmailExist,
+    checkTeacherCodeExist,
+    checkPhoneNumberExist,
 };
 
 export default api;

@@ -1,5 +1,7 @@
 package datn.qlth.service.Impl;
 
+import java.util.ArrayList;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -64,7 +66,9 @@ public class ClassRoomServiceImpl implements ClassRoomService{
 		
 		Teacher teacher = teacherRepository.findByTeacherCode(form.getTeacherCode());
 		
-		classRoom.setQuantity(0);
+		classRoom.setUsers(new ArrayList<>());
+		
+//		classRoom.setQuantity(0);
 		classRoom.setMajor(major);
 		classRoom.setTeacher(teacher);
 		
@@ -205,5 +209,10 @@ public class ClassRoomServiceImpl implements ClassRoomService{
 	@Override
 	public boolean isClassRoomExistsByClassRoomName(String classRoomName) {
 		return repository.existsByClassRoomName(classRoomName);
+	}
+
+	@Override
+	public boolean isClassRoomExistsByClassRoomNameAndCourse(String classRoomName, Integer course) {
+		return repository.existsByClassRoomNameAndCourse(classRoomName, course);
 	}
 }

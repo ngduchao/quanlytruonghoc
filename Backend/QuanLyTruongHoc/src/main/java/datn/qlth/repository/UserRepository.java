@@ -12,7 +12,7 @@ public interface UserRepository extends JpaRepository<User, Integer>, JpaSpecifi
 	
 	Optional<User> findByUsername (String username);
 	
-	public User findByUserCode(String userCode);
+	public User findByUserCode(String usercode);
 	
 	public User findByEmail(String email);
 	
@@ -25,4 +25,5 @@ public interface UserRepository extends JpaRepository<User, Integer>, JpaSpecifi
 	public boolean existsByPhoneNumber(String phoneNumber);
 	
 	public List<User> findByRole(String role);
+
 }

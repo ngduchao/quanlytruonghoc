@@ -29,6 +29,8 @@ public interface UserService {
 	
 	public User getUserByUsername(String username);
 	
+	public User getUserByUserCode(String userCode);
+	
 	public List<User> getListUsers();
 	
 	public void updateUser (Integer ID, UpdateUserDTO form);

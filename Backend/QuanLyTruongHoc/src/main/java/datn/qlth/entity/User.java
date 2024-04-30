@@ -8,6 +8,7 @@ import org.hibernate.annotations.Formula;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
+import datn.qlth.entity.Enum.Gender;
 import datn.qlth.entity.Enum.Role;
 import datn.qlth.entity.Enum.UserStatus;
 import jakarta.persistence.Column;
@@ -69,6 +70,10 @@ public class User implements Serializable{
 	@Column(name = "`home_town`", length = 100, nullable = false)
 	private String homeTown;
 	
+	@Column(name = "`gender`")
+	@Enumerated(value = EnumType.STRING)
+	private Gender gender;
+	
 	@Column(name = "`role`")
     @Enumerated(value = EnumType.STRING)
     private Role role;
@@ -83,7 +88,7 @@ public class User implements Serializable{
 	private ClassRoom classRoom;
 	
 	@OneToMany(mappedBy = "user")
-	@OnDelete(action = OnDeleteAction.SET_NULL)
+	@OnDelete(action = OnDeleteAction.CASCADE)
 	private List<RegistrationSubject> registrationSubjects;
 	
 	@OneToMany(mappedBy = "user")

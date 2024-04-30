@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router";
 import classNames from "classnames/bind";
 import { faUser } from "@fortawesome/free-regular-svg-icons";
 import { faChevronDown, faSignIn } from "@fortawesome/free-solid-svg-icons";
@@ -9,7 +10,6 @@ import Menu from "../../../components/Popper/Menu/Menu";
 import config from "../../../config";
 import Storage from "../../../storage/Storages";
 import userApi from "../../../services/api/userApi";
-import { useNavigate } from "react-router";
 
 const cx = classNames.bind(styles);
 

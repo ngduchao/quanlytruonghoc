@@ -17,7 +17,7 @@ public class CreateMajorDTO {
 	
 	@NotBlank(message = "The majorCode mustn't be null value")
 	@Length(max = 30, message = "The majorCode length is max 30 characters")
-	@Length(min = 6, message = "The majorCode length is min 6 characters")
+	@Length(min = 4, message = "The majorCode length is min 6 characters")
 	@MajorCodeNotExists
 	private String majorCode;
 	

@@ -40,4 +40,6 @@ public interface ClassRoomService {
 	public boolean isClassRoomExistsByClassRoomCode(String classRoomCode);
 	
 	public boolean isClassRoomExistsByClassRoomName(String classRoomName);
+	
+	public boolean isClassRoomExistsByClassRoomNameAndCourse(String classRoomName, Integer course);
 }

@@ -1,64 +1,75 @@
-.container{
-    // display: block;
-    text-align: center;
 
-    margin-left: 5%;
-    margin-right: 5%;
-
-    color: #032E59;
+.wrapper {
+    position: relative; /* Xác định vị trí cho phần tử con */
 }
 
-.title {
-    font-family: "Quicksand", cursive;
-    font-weight: 400;
-    font-size: 7rem;
-    line-height: 1;
-
-    margin-left: -60px;
-    // color: var(--white);
-    padding: 10px 5px 5px 5px;
+.thump {
+    width: 100%; /* Độ rộng của ảnh */
+    height: auto; /* Đảm bảo tỉ lệ hình ảnh không bị méo */
+    display: block; /* Chuyển ảnh thành phần tử block để đảm bảo kích thước chính xác */
 }
 
-.sub-title {
-    font-family: "Quicksand", cursive;
-    font-weight: 400;
-    font-size: 4rem;
+.title1 {
+    position: absolute; /* Xác định vị trí tuyệt đối cho phần tử con */
+    top: 20%; /* Căn giữa theo chiều dọc */
+    left: 10%; /* Căn giữa theo chiều ngang */
+    color: #333; /* Màu chữ */
+    font-size: 4.2rem;
     line-height: 50px;
-
-    width: 1100px;
-    margin-left: 130px;
-
-    padding: 5px;
-}
-
-.content1{
-    font-family: "Quicksand", cursive;
-    font-weight: 400;
-    font-size: 2.5rem;
-    line-height: 45px;
-
-    padding: 5px;
-}
-
-.content2, .content3{
-    font-family: "Quicksand", cursive;
-    font-weight: 400;
-    font-size: 1.8rem;
-    line-height: 40px;
-
-    float: left;
+    background-color: rgba(255, 255, 255, 0.8);
     width: 500px;
-    box-sizing: border-box;
-
-    padding: 5px;
-
-    // margin-left: 90px;
+    opacity: 0; /* Bắt đầu với opacity là 0 để ẩn tiêu đề khi ban đầu */
+    transition: opacity 1.5s ease; /* Áp dụng transition cho thuộc tính opacity với thời gian 1 giây và hình thức là 'ease' */
+    transform: translateY(-500px);
 }
 
-.content2{
-    margin-left: 100px;
+.title2 {
+    position: absolute; /* Xác định vị trí tuyệt đối cho phần tử con */
+    top: 34%; /* Căn giữa theo chiều dọc */
+    left: 10%; /* Căn giữa theo chiều ngang */
+    color: #333; /* Màu chữ */
+    font-size: 3rem;
+    line-height: 35px;
+    background-color: rgba(255, 255, 255, 0.8);
+    width: 500px;
+    opacity: 0; /* Bắt đầu với opacity là 0 để ẩn tiêu đề khi ban đầu */
+    transition: opacity 1.5s ease; /* Áp dụng transition cho thuộc tính opacity với thời gian 1 giây và hình thức là 'ease' */
+    transform: translateY(-500px);
 }
 
-.content3{
-    margin-left: 50px;
+.title3 {
+    position: absolute; /* Xác định vị trí tuyệt đối cho phần tử con */
+    top: 44%; /* Căn giữa theo chiều dọc */
+    left: 10%; /* Căn giữa theo chiều ngang */
+    color: #333; /* Màu chữ */
+    font-size: 3rem;
+    line-height: 40px;
+    background-color: rgba(255, 255, 255, 0.8);
+    width: 500px;
+    opacity: 0; /* Bắt đầu với opacity là 0 để ẩn tiêu đề khi ban đầu */
+    transition: opacity 1.5s ease; /* Áp dụng transition cho thuộc tính opacity với thời gian 1 giây và hình thức là 'ease' */
+    transform: translateY(-500px);
+}
+
+.wrapper.active .title1, .wrapper.active .title2, .wrapper.active .title3 {
+    opacity: 1; /* Khi class 'active' được thêm vào wrapper, thì opacity được đặt thành 1 */
+    transform: translateY(0); /* Khi class 'active' được thêm vào wrapper, tiêu đề sẽ trôi xuống vị trí bình thường */
+}
+
+.contact-us{
+    position: absolute; /* Xác định vị trí tuyệt đối cho phần tử con */
+    top: 66%; /* Căn giữa theo chiều dọc */
+    left: 10%; /* Căn giữa theo chiều ngang */
+    color: var(--white); /* Màu chữ */
+    line-height: 35px;
+    background-color: #ff5b4f;
+    width: 180px;
+    height: 50px;
+    text-align: center;
+    padding-top: 6px;
+
+    &:hover{
+        background-color: #fc3b2d;
+        color: var(--white);
+    }
 }

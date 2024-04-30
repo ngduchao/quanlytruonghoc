@@ -17,6 +17,12 @@ export default function subjectReducer(state = initialState, actions) {
                 totalElements: actions.payload.totalElements,
             };
         }
+        case types.GET_LIST_SUBJECT_NOT_PAGINATION: {
+            return {
+                ...state,
+                subjects: actions.payload,
+            };
+        }
         case types.UPDATE_SUBJECT: {
             const newList = [...state.subjects];
             const index = state.subjects.findIndex(

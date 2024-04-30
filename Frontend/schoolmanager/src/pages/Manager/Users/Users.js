@@ -14,6 +14,7 @@ import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import toast, { Toaster } from "react-hot-toast";
 import { format } from "date-fns";
+import ReactPaginate from "react-paginate";
 
 import SubHeader from "../SubHeader/SubHeader";
 import styles from "./User.module.scss";
@@ -31,7 +32,6 @@ import {
     selectTotalElement,
 } from "../../../redux/selectors/userSelector";
 import classroomApi from "../../../services/api/classroomApi";
-import ReactPaginate from "react-paginate";
 
 const cx = classNames.bind(styles);
 
@@ -67,6 +67,8 @@ function Users(props) {
     }, [refresh]);
 
     const [isAscendingUserCode, setIsAscendingUserCode] = useState(true);
+    const [isAscendingFullName, setIsAscendingFullName] = useState(true);
+    const [isAscendingBirthDay, setIsAscendingBirthDay] = useState(true);
 
     // Hàm xử lý khi nhấp vào tiêu đề bảng
     const handleHeaderClickUserCode = () => {
@@ -77,6 +79,28 @@ function Users(props) {
         } else {
             setSortField("userCode");
             setSortType("asc");
+        }
+    };
+
+    const handleHeaderClickFullName = () => {
+        setIsAscendingFullName(!isAscendingFullName);
+        if (isAscendingFullName) {
+            setSortField("lastName");
+            setSortType("desc");
+        } else {
+            setSortField("lastName");
+            setSortType("asc");
+        }
+    };
+
+    const handleHeaderClickBirthDay = () => {
+        setIsAscendingBirthDay(!isAscendingBirthDay);
+        if (isAscendingBirthDay) {
+            setSortField("birthDay");
+            setSortType("asc");
+        } else {
+            setSortField("birthDay");
+            setSortType("desc");
         }
     };
 
@@ -156,7 +180,16 @@ function Users(props) {
 
         getAllUser();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [getListUser, refresh, page, search, filter, isAscendingUserCode]);
+    }, [
+        getListUser,
+        refresh,
+        page,
+        search,
+        filter,
+        isAscendingUserCode,
+        isAscendingFullName,
+        isAscendingBirthDay,
+    ]);
 
     const isValidEmail = (email) => {
         const emailRegex = /^[\w.%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
@@ -177,10 +210,19 @@ function Users(props) {
     };
 
     const isValidBirthDay = (birthDay) => {
-        if (new Date() < new Date(birthDay)) {
-            return 0;
+        let yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+
+        // Chuyển đổi cả hai ngày về đầu ngày để so sánh
+        let birthDayDate = new Date(birthDay);
+        birthDayDate.setHours(0, 0, 0, 0);
+        yesterday.setHours(0, 0, 0, 0);
+
+        // So sánh ngày sinh với ngày hôm qua
+        if (birthDayDate.getTime() > yesterday.getTime()) {
+            return 0; // Ngày sinh là ngày hôm qua
         } else {
-            return 1;
+            return 1; // Ngày sinh không phải là ngày hôm qua
         }
     };
 
@@ -211,6 +253,7 @@ function Users(props) {
         phoneNumber: "",
         birthDay: "",
         homeTown: "",
+        gender: "",
         role: role,
         classRoomID: "",
         status: "STUDYING",
@@ -223,6 +266,13 @@ function Users(props) {
         });
     };
 
+    const handleChangeSelected = (e) => {
+        setAddForm({
+            ...addForm,
+            gender: e.target.value, // Gán giá trị của thẻ option vào addForm
+        });
+    };
+
     const handleAddChange = (e) => {
         setAddForm({
             ...addForm,
@@ -230,6 +280,9 @@ function Users(props) {
         });
         if (e.target.name === "classRoomID") {
             handleChangeSelectedCreate(e); // Cập nhật giá trị từ option
+        }
+        if (e.target.name === "gender") {
+            handleChangeSelected(e); // Cập nhật giá trị từ option
         }
     };
 
@@ -239,6 +292,7 @@ function Users(props) {
 
     const handleSubmitCreate = async (e) => {
         e.preventDefault();
+        let isValid = true;
         try {
             const userCode = await userApi.checkUserCodeExist(
                 addForm.userCode.trim()
@@ -247,8 +301,10 @@ function Users(props) {
                 setUserCodeError(
                     "Mã học sinh không hợp lệ! (từ 6 đến 20 kí tự)"
                 );
+                isValid = false;
             } else if (userCode) {
                 setUserCodeError("Mã học sinh đã tồn tại!");
+                isValid = false;
             }
 
             const username = await userApi.checkUsernameExist(
@@ -256,20 +312,25 @@ function Users(props) {
             );
             if (!isValidUsername(addForm.username.trim())) {
                 setUsernameError("Tài khoản không hợp lệ! (từ 6 đến 50 kí tự)");
+                isValid = false;
             } else if (username) {
                 setUsernameError("Tài khoản đã tồn tại!");
+                isValid = false;
             }
 
             if (addForm.password.length < 6) {
                 setPasswordError("Mật khẩu phải hơn 6 kí tự");
+                isValid = false;
             }
 
             const email = await userApi.checkEmailExist(addForm.email.trim());
             if (!isValidEmail(addForm.email.trim())) {
                 // Kiểm tra tính hợp lệ của email
                 setEmailError("Email không hợp lệ!");
+                isValid = false;
             } else if (email) {
                 setEmailError("Email đã tồn tại!");
+                isValid = false;
             }
 
             const phoneNumber = await userApi.checkPhoneNumberExist(
@@ -278,40 +339,46 @@ function Users(props) {
             if (!isValidPhoneNumber(addForm.phoneNumber.trim())) {
                 // Kiểm tra tính hợp lệ của sdt
                 setPhoneNumberError("Số điện thoại không hợp lệ!");
+                isValid = false;
             } else if (phoneNumber) {
                 setPhoneNumberError("Số điện thoại đã tồn tại!");
+                isValid = false;
             }
 
             if (isValidBirthDay(addForm.birthDay) === 0) {
                 setBirthDayError("Ngày sinh không hợp lệ!");
+                isValid = false;
             }
 
-            const data = await userApi.createUser(addForm);
-            props.addUserAction(data);
+            if (isValid) {
+                const data = await userApi.createUser(addForm);
+                props.addUserAction(data);
 
-            setAddForm({
-                userCode: "",
-                username: "",
-                email: "",
-                password: "",
-                firstName: "",
-                lastName: "",
-                phoneNumber: "",
-                birthDay: "",
-                homeTown: "",
-                role: role,
-                classRoomID: "",
-                status: "STUDYING",
-            });
-            setShowAddForm(!showAddForm);
-            notify("Thêm mới thành công");
+                setAddForm({
+                    userCode: "",
+                    username: "",
+                    email: "",
+                    password: "",
+                    firstName: "",
+                    lastName: "",
+                    phoneNumber: "",
+                    birthDay: "",
+                    homeTown: "",
+                    gender: "",
+                    role: role,
+                    classRoomID: "",
+                    status: "STUDYING",
+                });
+                setShowAddForm(!showAddForm);
+                notify("Thêm mới thành công");
 
-            handleFocus();
+                handleFocus();
+            }
         } catch (error) {
             console.error("Error creating data: ", error);
 
             if (error.status === 500) {
-                notify("Thêm mới bại!");
+                notify("Thêm mới thất bại!");
             }
         }
     };
@@ -328,6 +395,7 @@ function Users(props) {
             phoneNumber: "",
             birthDay: "",
             homeTown: "",
+            gender: "",
             role: role,
             classRoomID: "",
             status: "STUDYING",
@@ -342,6 +410,7 @@ function Users(props) {
         phoneNumber: "",
         birthDay: "",
         homeTown: "",
+        gender: "",
         classRoomID: "",
         userID: "",
     });
@@ -353,6 +422,7 @@ function Users(props) {
         phoneNumber: "",
         birthDay: "",
         homeTown: "",
+        gender: "",
         classRoomID: "",
         userID: "",
     });
@@ -360,7 +430,14 @@ function Users(props) {
     const handleChangeSelectedUpdate = (e) => {
         setUpdateForm({
             ...updateForm,
-            classRoomID: e.target.value, // Gán giá trị của thẻ option vào updateForm
+            classRoomID: e.target.value,
+        });
+    };
+
+    const handleChangeSelectedUpdateGender = (e) => {
+        setUpdateForm({
+            ...updateForm,
+            gender: e.target.value,
         });
     };
 
@@ -369,6 +446,9 @@ function Users(props) {
             ...updateForm,
             [e.target.name]: e.target.value,
         });
+        if (e.target.name === "gender") {
+            handleChangeSelectedUpdate(e); // Cập nhật giá trị từ option
+        }
         if (e.target.name === "classRoomID") {
             handleChangeSelectedUpdate(e); // Cập nhật giá trị từ option
         }
@@ -381,6 +461,7 @@ function Users(props) {
         phoneNumber,
         birthDay,
         homeTown,
+        gender,
         classRoomID,
         userID
     ) => {
@@ -391,6 +472,7 @@ function Users(props) {
             phoneNumber,
             birthDay,
             homeTown,
+            gender,
             classRoomID,
             userID,
         });
@@ -401,6 +483,7 @@ function Users(props) {
             phoneNumber,
             birthDay,
             homeTown,
+            gender,
             classRoomID,
             userID,
         });
@@ -409,6 +492,7 @@ function Users(props) {
 
     const handleSubmitUpdate = async (e) => {
         e.preventDefault();
+        let isValid = true;
         try {
             const email = await userApi.checkEmailExist(
                 updateForm.email.trim()
@@ -416,56 +500,65 @@ function Users(props) {
             const phoneNumber = await userApi.checkPhoneNumberExist(
                 updateForm.phoneNumber.trim()
             );
+
             if (
                 checkUpdateForm.email !== updateForm.email ||
-                checkUpdateForm.phoneNumber !== updateForm.phoneNumber ||
-                checkUpdateForm.birthDay !== updateForm.birthDay
+                checkUpdateForm.phoneNumber !== updateForm.phoneNumber
             ) {
                 if (!isValidEmail(updateForm.email.trim())) {
                     // Kiểm tra tính hợp lệ của email
                     setEmailError("Email không hợp lệ!");
-                }
-                if (email) {
+                    isValid = false;
+                } else if (
+                    email &&
+                    checkUpdateForm.email !== updateForm.email
+                ) {
                     setEmailError("Email đã tồn tại!");
+                    isValid = false;
                 }
 
-                if (checkUpdateForm.phoneNumber !== updateForm.phoneNumber) {
-                    if (!isValidPhoneNumber(updateForm.phoneNumber.trim())) {
-                        // Kiểm tra tính hợp lệ của sdt
-                        setPhoneNumberError("Số điện thoại không hợp lệ!");
-                    }
-                    if (phoneNumber) {
-                        setPhoneNumberError("Số điện thoại đã tồn tại!");
-                    }
+                if (!isValidPhoneNumber(updateForm.phoneNumber.trim())) {
+                    // Kiểm tra tính hợp lệ của sdt
+                    setPhoneNumberError("Số điện thoại không hợp lệ!");
+                    isValid = false;
+                } else if (
+                    phoneNumber &&
+                    checkUpdateForm.phoneNumber !== updateForm.phoneNumber
+                ) {
+                    setPhoneNumberError("Số điện thoại đã tồn tại!");
+                    isValid = false;
                 }
-
-                if (isValidBirthDay(checkUpdateForm.birthDay) === 0) {
-                    setBirthDayError("Ngày sinh không hợp lệ!");
-                }
-                return;
             }
 
-            const data = await userApi.updateUser(updateForm);
-            props.updateUserAction(data);
+            if (isValidBirthDay(updateForm.birthDay) === 0) {
+                setBirthDayError("Ngày sinh không hợp lệ!");
+                isValid = false;
+            }
 
-            setUpdateForm({
-                firstName: "",
-                lastName: "",
-                email: "",
-                phoneNumber: "",
-                birthDay: "",
-                homeTown: "",
-                classRoomID: "",
-                userID: "",
-            });
-            setShowUpdateForm(!showUpdateForm);
-            notify("Cập nhật thành công");
+            if (isValid) {
+                const data = await userApi.updateUser(updateForm);
+                props.updateUserAction(data);
 
-            handleFocus();
+                setUpdateForm({
+                    firstName: "",
+                    lastName: "",
+                    email: "",
+                    phoneNumber: "",
+                    birthDay: "",
+                    homeTown: "",
+                    gender: "",
+                    classRoomID: "",
+                    userID: "",
+                });
+                setShowUpdateForm(!showUpdateForm);
+                notify("Cập nhật thành công");
+
+                handleFocus();
+            }
         } catch (error) {
             console.error("Error updating data: ", error);
             if (error.status === 500) {
-                notify("Cập nhật mới bại!");
+                notify("Cập nhật thất bại!");
             }
         }
     };
@@ -479,6 +572,7 @@ function Users(props) {
             phoneNumber: "",
             birthDay: "",
             homeTown: "",
+            gender: "",
             classRoomID: "",
             userID: "",
         });
@@ -640,12 +734,57 @@ function Users(props) {
                                             </span>
                                         </div>
                                     </th>
-                                    <th>Tên Học Sinh</th>
+                                    <th
+                                        className={cx("subject-code-header")}
+                                        onClick={handleHeaderClickFullName}
+                                    >
+                                        <div className={cx("header-container")}>
+                                            Tên Học Sinh
+                                            <span
+                                                className={cx(
+                                                    "caret-container"
+                                                )}
+                                            >
+                                                {isAscendingFullName ? (
+                                                    <FontAwesomeIcon
+                                                        icon={faCaretUp}
+                                                    />
+                                                ) : (
+                                                    <FontAwesomeIcon
+                                                        icon={faCaretDown}
+                                                    />
+                                                )}
+                                            </span>
+                                        </div>
+                                    </th>
                                     <th>Tên Lớp</th>
                                     <th>Tên Tài Khoản</th>
                                     <th>Email</th>
                                     <th>Số Điện Thoại</th>
-                                    <th>Ngày Sinh</th>
+                                    <th
+                                        className={cx("subject-code-header")}
+                                        onClick={handleHeaderClickBirthDay}
+                                    >
+                                        <div className={cx("header-container")}>
+                                            Ngày Sinh
+                                            <span
+                                                className={cx(
+                                                    "caret-container"
+                                                )}
+                                            >
+                                                {isAscendingBirthDay ? (
+                                                    <FontAwesomeIcon
+                                                        icon={faCaretUp}
+                                                    />
+                                                ) : (
+                                                    <FontAwesomeIcon
+                                                        icon={faCaretDown}
+                                                    />
+                                                )}
+                                            </span>
+                                        </div>
+                                    </th>
+                                    <th>Giới tính</th>
                                     <th>Quê Quán</th>
                                     <th>Khóa</th>
                                     <th>Trạng Thái</th>
@@ -672,6 +811,11 @@ function Users(props) {
                                             <td>{item.email}</td>
                                             <td>{item.phoneNumber}</td>
                                             <td>{formatDate(item.birthDay)}</td>
+                                            <td>
+                                                {item.gender === "MALE"
+                                                    ? "Nam"
+                                                    : "Nữ"}
+                                            </td>
                                             <td>{item.homeTown}</td>
                                             <td>
                                                 {item.classroom !== null
@@ -696,6 +840,7 @@ function Users(props) {
                                                             item.phoneNumber,
                                                             item.birthDay,
                                                             item.homeTown,
+                                                            item.gender,
                                                             item.classroom
                                                                 .classRoomID,
                                                             item.userID
@@ -808,10 +953,7 @@ function Users(props) {
                             onFocus={handleFocus}
                             required
                         />
-                        <span
-                            className={cx("firstName-error-message")}
-                            hidden
-                        ></span>
+                        <label className={cx("user-Error")}></label>
 
                         <label className={cx("label")}>Tên</label>
                         <input
@@ -824,10 +966,7 @@ function Users(props) {
                             onFocus={handleFocus}
                             required
                         />
-                        <span
-                            className={cx("lastName-error-message")}
-                            hidden
-                        ></span>
+                        <label className={cx("user-Error")}></label>
 
                         <label className={cx("label")}>Email</label>
                         <input
@@ -884,6 +1023,24 @@ function Users(props) {
                             required
                         />
 
+                        <label className={cx("user-Error")}></label>
+
+                        <label className={cx("label")}>Giới tính</label>
+                        <select
+                            className={cx("selection")}
+                            name="gender"
+                            value={addForm.gender || ""}
+                            onChange={handleChangeSelected}
+                            onFocus={handleFocus}
+                            required
+                        >
+                            <option value={""}>Chọn Giới Tính</option>
+                            <option value={"MALE"}>Nam</option>
+                            <option value={"FEMALE"}>Nữ</option>
+                        </select>
+
+                        <label className={cx("user-Error")}></label>
+
                         <label className={cx("label")}>Chọn lớp</label>
                         <select
                             className={cx("selection")}
@@ -937,6 +1094,7 @@ function Users(props) {
                             onChange={handleChange}
                             onFocus={handleFocus}
                         />
+                        <label className={cx("user-Error")}></label>
 
                         <label htmlFor="lastName" className={cx("label")}>
                             Tên
@@ -950,6 +1108,7 @@ function Users(props) {
                             onChange={handleChange}
                             onFocus={handleFocus}
                         />
+                        <label className={cx("user-Error")}></label>
 
                         <label htmlFor="email" className={cx("label")}>
                             Email
@@ -1010,6 +1169,23 @@ function Users(props) {
                             onChange={handleChange}
                             onFocus={handleFocus}
                         />
+                        <label className={cx("user-Error")}></label>
+
+                        <label className={cx("label")}>Giới tính</label>
+                        <select
+                            className={cx("selection")}
+                            name="gender"
+                            value={updateForm.gender || ""}
+                            onChange={handleChangeSelectedUpdateGender}
+                            onFocus={handleFocus}
+                            required
+                        >
+                            <option value={""}>Chọn Giới Tính</option>
+                            <option value={"MALE"}>Nam</option>
+                            <option value={"FEMALE"}>Nữ</option>
+                        </select>
+
+                        <label className={cx("user-Error")}></label>
 
                         <label className={cx("label")}>Chọn lớp</label>
                         <select
@@ -1020,7 +1196,6 @@ function Users(props) {
                             onFocus={handleFocus}
                             required
                         >
-                            <option value="">Chọn lớp</option>
                             {classroomList.map((classroom, index) => (
                                 <option
                                     key={index}

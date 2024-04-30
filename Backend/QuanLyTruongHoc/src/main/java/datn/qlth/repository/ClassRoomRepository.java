@@ -14,4 +14,7 @@ public interface ClassRoomRepository extends JpaRepository<ClassRoom, Integer>, 
 	public boolean existsByClassRoomCode(String classRoomCode);
 	
 	public boolean existsByClassRoomName(String classRoomName);
+	
+	public boolean existsByClassRoomNameAndCourse(String classRoomName, Integer course);
+	
 }

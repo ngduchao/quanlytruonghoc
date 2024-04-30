@@ -40,6 +40,8 @@ public class ClassRoomDTO {
 		private String teacherCode;
 		
 		private String teacherName;
+		
+		private String phoneNumber;
 	}
 	
 }

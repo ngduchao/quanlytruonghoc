@@ -125,4 +125,28 @@ public class TeacherController {
 		
 		return new ResponseEntity<>(dto, HttpStatus.OK);
 	}
+	
+	@GetMapping(value = "/teacherCode/{teacherCode}")
+	public ResponseEntity<?> existsUserByTeacherCode(@PathVariable(name = "teacherCode") String teacherCode){
+		
+		boolean result = service.isExistsByTeacherCode(teacherCode);
+		
+		return new ResponseEntity<>(result, HttpStatus.OK);
+	}
+	
+	@GetMapping(value = "/email/{email}")
+	public ResponseEntity<?> existsUserByEmail(@PathVariable(name = "email") String email){
+		
+		boolean result = service.isExistsByEmail(email);
+		
+		return new ResponseEntity<>(result, HttpStatus.OK);
+	}
+	
+	@GetMapping(value = "/phoneNumber/{phoneNumber}")
+	public ResponseEntity<?> existsUserByPhoneNumber(@PathVariable(name = "phoneNumber") String phoneNumber){
+		
+		boolean result = service.isExistsByPhoneNumber(phoneNumber);
+		
+		return new ResponseEntity<>(result, HttpStatus.OK);
+	}
 }

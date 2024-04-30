@@ -13,6 +13,9 @@ import { useCallback, useEffect, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
+import { format } from "date-fns";
+import ReactPaginate from "react-paginate";
+import { Link } from "react-router-dom";
 
 import SubHeader from "../SubHeader/SubHeader";
 import styles from "./ClassRoom.module.scss";
@@ -31,8 +34,6 @@ import {
 } from "../../../redux/selectors/classroomSelector";
 import majorApi from "../../../services/api/majorApi";
 import teacherApi from "../../../services/api/teacherApi";
-import { format } from "date-fns";
-import ReactPaginate from "react-paginate";
 
 const cx = classNames.bind(styles);
 
@@ -186,6 +187,25 @@ function ClassRoom(props) {
         isAscendingCourse,
     ]);
 
+    const isValidClassRoomCode = (classRoomCode) => {
+        return classRoomCode.length >= 6 && classRoomCode.length <= 20;
+    };
+
+    const isValidClassRoomName = (classRoomName) => {
+        return classRoomName.length >= 6 && classRoomName.length <= 100;
+    };
+
+    const [classRoomCodeError, setClassRoomCodeError] = useState("");
+    const [classRoomNameAndCourseError, setClassRoomNameAndCourseError] =
+        useState("");
+    const [classRoomNameError, setClassRoomNameError] = useState("");
+
+    const handleFocus = () => {
+        setClassRoomCodeError("");
+        setClassRoomNameAndCourseError("");
+        setClassRoomNameError("");
+    };
+
     const [addForm, setAddForm] = useState({
         classRoomCode: "",
         classRoomName: "",
@@ -227,23 +247,79 @@ function ClassRoom(props) {
 
     const handleSubmitCreate = async (e) => {
         e.preventDefault();
-        console.log(addForm);
+        let isValid = true;
         try {
-            const data = await classroomApi.createClassroom(addForm);
-            props.addClassroomAction(data);
+            const classRoomCode = await classroomApi.checkClassRoomCodeExists(
+                addForm.classRoomCode.trim()
+            );
+            if (!isValidClassRoomCode(addForm.classRoomCode.trim())) {
+                setClassRoomCodeError(
+                    "Mã lớp không hợp lệ! (từ 6 đến 20 kí tự)"
+                );
+                isValid = false;
+            } else if (classRoomCode) {
+                setClassRoomCodeError("Mã lớp đã tồn tại!");
+                isValid = false;
+            }
 
-            setAddForm({
-                classRoomCode: "",
-                classRoomName: "",
-                course: "",
-                majorCode: "",
-                teacherCode: "",
-            });
-            setShowAddForm(!showAddForm);
-            notify("Thêm mới thành công");
+            if (!isValidClassRoomName(addForm.classRoomName.trim())) {
+                setClassRoomNameError(
+                    "Tên lớp không hợp lệ! (từ 6 đến 100 kí tự)"
+                );
+                isValid = false;
+            }
+
+            const classRoomNameAndCourse =
+                await classroomApi.CheckClassRoomNameAndCourse(
+                    addForm.classRoomName.trim(),
+                    addForm.course
+                );
+            if (classRoomNameAndCourse) {
+                setClassRoomNameAndCourseError(
+                    "Lớp " +
+                        addForm.classRoomName +
+                        " khóa " +
+                        addForm.course +
+                        " đã tồn tại!"
+                );
+                isValid = false;
+            }
+
+            if (isValid) {
+                const data = await classroomApi.createClassroom(addForm);
+                props.addClassroomAction(data);
+
+                setAddForm({
+                    classRoomCode: "",
+                    classRoomName: "",
+                    course: "",
+                    majorCode: "",
+                    teacherCode: "",
+                });
+                setShowAddForm(!showAddForm);
+                notify("Thêm mới thành công");
+
+                handleFocus();
+            }
         } catch (error) {
             console.error("Error creating data: ", error);
+
+            if (error.status === 500) {
+                notify("Thêm mới bại!");
+            }
         }
+    };
+
+    const handleCloseModalAdd = () => {
+        setShowAddForm(!showAddForm);
+        setAddForm({
+            classRoomCode: "",
+            classRoomName: "",
+            course: "",
+            majorCode: "",
+            teacherCode: "",
+        });
+        handleFocus();
     };
 
     const [updateForm, setUpdateForm] = useState({
@@ -255,25 +331,14 @@ function ClassRoom(props) {
         classRoomID: "",
     });
 
-    const handleShowUpdateModel = (
-        classRoomCode,
-        classRoomName,
-        course,
-        majorID,
-        teacherID,
-        classRoomID
-    ) => {
-        setUpdateForm({
-            classRoomCode,
-            classRoomName,
-            course,
-            majorID,
-            teacherID,
-            classRoomID,
-        });
-        setShowUpdateForm(!showUpdateForm);
-        console.log(updateForm);
-    };
+    const [checkUpdateForm, setCheckUpdateForm] = useState({
+        classRoomCode: "",
+        classRoomName: "",
+        course: "",
+        majorID: "",
+        teacherID: "",
+        classRoomID: "",
+    });
 
     const handleChangeSelectedUpdateMajor = (e) => {
         setUpdateForm({
@@ -302,26 +367,108 @@ function ClassRoom(props) {
         }
     };
 
+    const handleShowUpdateModel = (
+        classRoomCode,
+        classRoomName,
+        course,
+        majorID,
+        teacherID,
+        classRoomID
+    ) => {
+        setUpdateForm({
+            classRoomCode,
+            classRoomName,
+            course,
+            majorID,
+            teacherID,
+            classRoomID,
+        });
+        setCheckUpdateForm({
+            classRoomCode,
+            classRoomName,
+            course,
+            majorID,
+            teacherID,
+            classRoomID,
+        });
+        setShowUpdateForm(!showUpdateForm);
+    };
+
     const handleSubmitUpdate = async (e) => {
         e.preventDefault();
+        let isValid = true;
         try {
-            console.log(updateForm);
-            const data = await classroomApi.updateClassroom(updateForm);
-            props.updateClassroomAction(data);
+            const classRoomCode = await classroomApi.checkClassRoomCodeExists(
+                updateForm.classRoomCode.trim()
+            );
+            if (checkUpdateForm.classRoomCode !== updateForm.classRoomCode) {
+                if (!isValidClassRoomCode(updateForm.classRoomCode.trim())) {
+                    setClassRoomCodeError("Mã lớp không hợp lệ!");
+                    isValid = false;
+                } else if (
+                    classRoomCode &&
+                    checkUpdateForm.classRoomCode !== updateForm.classRoomCode
+                ) {
+                    setClassRoomCodeError("Mã lớp đã tồn tại");
+                    isValid = false;
+                }
+            }
 
-            setUpdateForm({
-                classRoomCode: "",
-                classRoomName: "",
-                course: "",
-                majorID: "",
-                teacherID: "",
-                classRoomID: "",
-            });
-            setShowUpdateForm(!showUpdateForm);
-            notify("Cập nhật thành công");
+            const classRoomName = await classroomApi.checkClassRoomNameExists(
+                updateForm.classRoomName.trim()
+            );
+            if (checkUpdateForm.classRoomName !== updateForm.classRoomName) {
+                if (!isValidClassRoomName(updateForm.classRoomName.trim())) {
+                    setClassRoomNameError("Tên lớp không hợp lệ!");
+                    isValid = false;
+                } else if (
+                    classRoomName &&
+                    checkUpdateForm.classRoomName !== updateForm.classRoomName
+                ) {
+                    setClassRoomNameError("Tên lớp đã tồn tại");
+                    isValid = false;
+                }
+            }
+
+            if (isValid) {
+                const data = await classroomApi.updateClassroom(updateForm);
+                props.updateClassroomAction(data);
+
+                setUpdateForm({
+                    classRoomCode: "",
+                    classRoomName: "",
+                    course: "",
+                    majorID: "",
+                    teacherID: "",
+                    classRoomID: "",
+                });
+                setShowUpdateForm(!showUpdateForm);
+                notify("Cập nhật thành công");
+
+                handleFocus();
+            }
         } catch (error) {
             console.error("Error updating data: ", error);
+
+            if (error.status === 500) {
+                notify("Cập nhật thất bại!");
+            }
         }
+    };
+
+    const handleCloseModalUpdate = () => {
+        setShowUpdateForm(!showUpdateForm);
+        setUpdateForm({
+            firstName: "",
+            lastName: "",
+            email: "",
+            phoneNumber: "",
+            birthDay: "",
+            homeTown: "",
+            classRoomID: "",
+            userID: "",
+        });
+        handleFocus();
     };
 
     const [classRoomDelete, setClassRoomDelete] = useState({
@@ -554,7 +701,13 @@ function ClassRoom(props) {
                                     props.classrooms.map((item, index) => (
                                         <tr key={index}>
                                             <td>{item.classRoomCode}</td>
-                                            <td>{item.classRoomName}</td>
+                                            <td>
+                                                <Link
+                                                    to={`/detail-classroom/${item.classRoomID}`}
+                                                >
+                                                    {item.classRoomName}
+                                                </Link>
+                                            </td>
                                             <td>{item.quantity}</td>
                                             <td>{item.course}</td>
                                             <td>
@@ -642,12 +795,12 @@ function ClassRoom(props) {
                             name="classRoomCode"
                             value={addForm.classRoomCode}
                             onChange={handleAddChange}
+                            onFocus={handleFocus}
                             required
                         />
-                        <span
-                            className={cx("classroomCode-error-message")}
-                            hidden
-                        ></span>
+                        <label className={cx("user-Error")}>
+                            {classRoomCodeError}
+                        </label>
                         <label className={cx("label")}>Tên lớp</label>
                         <input
                             type="text"
@@ -656,12 +809,12 @@ function ClassRoom(props) {
                             name="classRoomName"
                             value={addForm.classRoomName}
                             onChange={handleAddChange}
+                            onFocus={handleFocus}
                             required
                         />
-                        <span
-                            className={cx("classroomName-error-message")}
-                            hidden
-                        ></span>
+                        <label className={cx("user-Error")}>
+                            {classRoomNameError}
+                        </label>
 
                         <label className={cx("label")}>Khóa</label>
                         <input
@@ -671,8 +824,12 @@ function ClassRoom(props) {
                             name="course"
                             value={addForm.course}
                             onChange={handleAddChange}
+                            onFocus={handleFocus}
                             required
                         />
+                        <label className={cx("user-Error")}>
+                            {classRoomNameAndCourseError}
+                        </label>
 
                         <label className={cx("label")}>Chọn ngành</label>
                         <select
@@ -680,6 +837,7 @@ function ClassRoom(props) {
                             name="majorCode"
                             value={addForm.majorCode || ""}
                             onChange={handleChangeSelectedMajor}
+                            onFocus={handleFocus}
                             required
                         >
                             <option value={""}>Chọn Ngành</option>
@@ -690,6 +848,8 @@ function ClassRoom(props) {
                             ))}
                         </select>
 
+                        <label className={cx("user-Error")}></label>
+
                         <label className={cx("label")}>
                             Chọn giáo viên chủ nhiệm
                         </label>
@@ -698,6 +858,7 @@ function ClassRoom(props) {
                             name="teacherCode"
                             value={addForm.teacherCode || ""}
                             onChange={handleChangeSelectedTeacher}
+                            onFocus={handleFocus}
                             required
                         >
                             <option value={""}>Chọn GVCN</option>
@@ -712,9 +873,7 @@ function ClassRoom(props) {
                             <button className={cx("btn-add")}>Thêm</button>
                             <button
                                 className={cx("btn-cancel")}
-                                onClick={() => {
-                                    setShowAddForm(!showAddForm);
-                                }}
+                                onClick={handleCloseModalAdd}
                             >
                                 Hủy
                             </button>
@@ -737,11 +896,11 @@ function ClassRoom(props) {
                             name="classRoomCode"
                             value={updateForm.classRoomCode}
                             onChange={handleChange}
+                            onFocus={handleFocus}
                         />
-                        <span
-                            className={cx("classroomCode-error-message")}
-                            hidden
-                        ></span>
+                        <label className={cx("user-Error")}>
+                            {classRoomCodeError}
+                        </label>
                         <label htmlFor="classroomName" className={cx("label")}>
                             Tên lớp
                         </label>
@@ -752,11 +911,11 @@ function ClassRoom(props) {
                             name="classRoomName"
                             value={updateForm.classRoomName}
                             onChange={handleChange}
+                            onFocus={handleFocus}
                         />
-                        <span
-                            className={cx("classroomName-error-message")}
-                            hidden
-                        ></span>
+                        <label className={cx("user-Error")}>
+                            {classRoomNameError}
+                        </label>
 
                         <label className={cx("label")}>Chọn ngành</label>
                         <select
@@ -764,6 +923,7 @@ function ClassRoom(props) {
                             name="majorID"
                             value={updateForm.majorID || ""}
                             onChange={handleChangeSelectedUpdateMajor}
+                            onFocus={handleFocus}
                             required
                         >
                             {majorList.map((major, index) => (
@@ -773,6 +933,8 @@ function ClassRoom(props) {
                             ))}
                         </select>
 
+                        <label className={cx("user-Error")}></label>
+
                         <label className={cx("label")}>
                             Chọn giáo viên chủ nhiệm
                         </label>
@@ -781,6 +943,7 @@ function ClassRoom(props) {
                             name="teacherID"
                             value={updateForm.teacherID || ""}
                             onChange={handleChangeSelectedUpdateTeacher}
+                            onFocus={handleFocus}
                             required
                         >
                             {teacherList.map((teacher, index) => (
@@ -794,9 +957,7 @@ function ClassRoom(props) {
                             <button className={cx("btn-add")}>Sửa</button>
                             <button
                                 className={cx("btn-cancel")}
-                                onClick={() => {
-                                    setShowUpdateForm(!showUpdateForm);
-                                }}
+                                onClick={handleCloseModalUpdate}
                             >
                                 Hủy
                             </button>

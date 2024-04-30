@@ -49,7 +49,7 @@ public class RegistrationSubject {
 	private Date createdDate;
 	
 	@ManyToOne
-	@OnDelete(action = OnDeleteAction.SET_NULL)
+	@OnDelete(action = OnDeleteAction.CASCADE)
 	@JoinColumn(name = "`user_id`")
 	private User user;
 	

@@ -53,12 +53,22 @@ const deleteMajor = (id) => {
     return Api.delete(`${url}/${id}`);
 };
 
+const checkMajorCodeExist = (majorCode) => {
+    return Api.get(`${url}/majorCode/${majorCode}`);
+};
+
+const checkMajorNameExist = (majorName) => {
+    return Api.get(`${url}/majorName/${majorName}`);
+};
+
 const api = {
     getAllMajors,
     createMajor,
     updateMajor,
     getById,
     deleteMajor,
+    checkMajorCodeExist,
+    checkMajorNameExist,
 };
 
 export default api;

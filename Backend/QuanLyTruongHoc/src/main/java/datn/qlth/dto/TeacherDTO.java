@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
+import datn.qlth.entity.Enum.Gender;
 import datn.qlth.entity.Enum.SpecializeLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -29,6 +30,8 @@ public class TeacherDTO {
 	private Date birthDay;
 	
 	private String homeTown;
+	
+	private Gender gender;
 	
     private SpecializeLevel specializeLevel;
     

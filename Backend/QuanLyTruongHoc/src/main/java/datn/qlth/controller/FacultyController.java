@@ -115,4 +115,20 @@ public class FacultyController {
 		
 		return new ResponseEntity<>(dto, HttpStatus.OK);
 	}
+	
+	@GetMapping(value = "/facultyCode/{facultyCode}")
+	public ResponseEntity<?> existsFacultyByFacultyCode(@PathVariable(name = "facultyCode") String facultyCode){
+		
+		boolean result = service.isFacultyExistsByFacultyCode(facultyCode);
+		
+		return new ResponseEntity<>(result, HttpStatus.OK);
+	}
+	
+	@GetMapping(value = "/facultyName/{facultyName}")
+	public ResponseEntity<?> existsFacultyByFacultyName(@PathVariable(name = "facultyName") String facultyName){
+		
+		boolean result = service.isFacultyExistsByFacultyName(facultyName);
+		
+		return new ResponseEntity<>(result, HttpStatus.OK);
+	}
 }

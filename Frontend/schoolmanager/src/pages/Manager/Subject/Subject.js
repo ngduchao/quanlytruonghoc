@@ -1,8 +1,9 @@
-import classNames from "classnames/bind";
-import { connect } from "react-redux";
+import { useCallback, useEffect, useState } from "react";
 import { bindActionCreators } from "redux";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { connect } from "react-redux";
+import classNames from "classnames/bind";
 import toast, { Toaster } from "react-hot-toast";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
     faCaretDown,
     faCaretUp,
@@ -12,7 +13,8 @@ import {
     faPlus,
     faRefresh,
 } from "@fortawesome/free-solid-svg-icons";
-import { useCallback, useEffect, useState } from "react";
+import ReactPaginate from "react-paginate";
+import { Link } from "react-router-dom";
 
 import styles from "./Subject.module.scss";
 import SubHeader from "../SubHeader/SubHeader";
@@ -30,8 +32,6 @@ import {
 } from "../../../redux/selectors/subjectSelector";
 import subjectApi from "../../../services/api/subjectApi";
 import teacherApi from "../../../services/api/teacherApi";
-
-import ReactPaginate from "react-paginate";
 
 const cx = classNames.bind(styles);
 
@@ -139,7 +139,7 @@ function Subject(props) {
     useEffect(() => {
         handleSetSort(sortField, sortType);
 
-        const getAllMajors = async () => {
+        const getAllSubjects = async () => {
             const result = await subjectApi.getAllSubjects(
                 page,
                 size,
@@ -156,7 +156,7 @@ function Subject(props) {
             getListSubjects(subjects, page, totalElements);
         };
 
-        getAllMajors();
+        getAllSubjects();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [
         getListSubjects,
@@ -167,6 +167,22 @@ function Subject(props) {
         isAscendingSubjectCode,
         isAscendingSubjectName,
     ]);
+
+    const isValidSubjectCode = (subjectCode) => {
+        return subjectCode.length >= 6 && subjectCode.length <= 30;
+    };
+
+    const isValidSubjectName = (subjectName) => {
+        return subjectName.length >= 6 && subjectName.length <= 100;
+    };
+
+    const [subjectCodeError, setSubjectCodeError] = useState("");
+    const [subjectNameError, setSubjectNameError] = useState("");
+
+    const handleFocus = () => {
+        setSubjectCodeError("");
+        setSubjectNameError("");
+    };
 
     const [addForm, setAddForm] = useState({
         subjectCode: "",
@@ -198,24 +214,81 @@ function Subject(props) {
 
     const handleSubmitCreate = async (e) => {
         e.preventDefault();
+        let isValid = true;
         try {
-            const data = await subjectApi.createSubject(addForm);
-            props.addSubjectAction(data);
+            const subjectCode = await subjectApi.checkSubjectCodeExist(
+                addForm.subjectCode.trim()
+            );
+            const subjectName = await subjectApi.checkSubjectNameExist(
+                addForm.subjectName.trim()
+            );
+            if (!isValidSubjectCode(addForm.subjectCode.trim())) {
+                setSubjectCodeError("Mã môn không hợp lệ! (từ 6 đến 30 kí tự)");
+                isValid = false;
+            } else if (subjectCode && subjectName) {
+                setSubjectNameError(
+                    "Môn học " + addForm.subjectName + " đã tồn tại!"
+                );
+                setSubjectCodeError("");
+                isValid = false;
+            } else if (!subjectCode && subjectName) {
+                isValid = true;
+            } else {
+                setSubjectCodeError("Mã môn đã tồn tại!");
+                isValid = false;
+            }
 
-            setAddForm({
-                subjectCode: "",
-                subjectName: "",
-                numberOfCredit: "",
-                teacherID: "",
-            });
-            setShowAddForm(!showAddForm);
-            notify("Thêm mới thành công");
+            if (!isValidSubjectName(addForm.subjectName.trim())) {
+                setSubjectNameError(
+                    "Tên môn không hợp lệ! (từ 6 đến 100 kí tự)"
+                );
+                isValid = false;
+            }
+
+            if (isValid) {
+                const data = await subjectApi.createSubject(addForm);
+                props.addSubjectAction(data);
+
+                setAddForm({
+                    subjectCode: "",
+                    subjectName: "",
+                    numberOfCredit: "",
+                    teacherID: "",
+                });
+                setShowAddForm(!showAddForm);
+                notify("Thêm mới thành công");
+
+                handleFocus();
+            }
         } catch (error) {
             console.error("Error creating data: ", error);
+
+            if (error.status === 500) {
+                notify("Thêm mới thất bại!");
+            }
         }
     };
 
+    const handleCloseModalAdd = () => {
+        setShowAddForm(!showAddForm);
+        setAddForm({
+            subjectCode: "",
+            subjectName: "",
+            numberOfCredit: "",
+            teacherID: "",
+        });
+        handleFocus();
+    };
+
     const [updateForm, setUpdateForm] = useState({
+        subjectCode: "",
+        subjectName: "",
+        numberOfCredit: "",
+        teacherID: "",
+        subjectID: "",
+    });
+
+    const [checkUpdateForm, setCheckUpdateForm] = useState({
         subjectCode: "",
         subjectName: "",
         numberOfCredit: "",
@@ -254,28 +327,109 @@ function Subject(props) {
             teacherID,
             subjectID,
         });
+        setCheckUpdateForm({
+            subjectCode,
+            subjectName,
+            numberOfCredit,
+            teacherID,
+            subjectID,
+        });
         setShowUpdateForm(!showUpdateForm);
     };
 
     const handleSubmitUpdate = async (e) => {
         e.preventDefault();
+        let isValid = true;
         try {
-            console.log(updateForm);
-            const data = await subjectApi.updateSubject(updateForm);
-            props.updateSubjectAction(data);
+            const subjectCode = await subjectApi.checkSubjectCodeExist(
+                updateForm.subjectCode.trim()
+            );
+            const subjectName = await subjectApi.checkSubjectNameExist(
+                updateForm.subjectName.trim()
+            );
+            if (updateForm.subjectCode !== checkUpdateForm.subjectCode) {
+                if (!isValidSubjectCode(updateForm.subjectCode.trim())) {
+                    setSubjectCodeError(
+                        "Mã môn không hợp lệ! (từ 6 đến 30 kí tự)"
+                    );
+                    isValid = false;
+                } else if (subjectCode && subjectName) {
+                    setSubjectNameError(
+                        "Môn học " + updateForm.subjectName + " đã tồn tại!"
+                    );
+                    setSubjectCodeError("");
+                    isValid = false;
+                } else if (!subjectCode && subjectName) {
+                    isValid = true;
+                }
+                if (
+                    subjectCode &&
+                    checkUpdateForm.subjectCode !== updateForm.subjectCode
+                ) {
+                    setSubjectCodeError("Mã môn đã tồn tại!");
+                    isValid = false;
+                }
+            }
 
-            setUpdateForm({
-                subjectCode: "",
-                subjectName: "",
-                numberOfCredit: "",
-                teacherID: "",
-                subjectID: "",
-            });
-            setShowUpdateForm(!showUpdateForm);
-            notify("Cập nhật thành công");
+            const subjectCodeAndSubjectName =
+                await subjectApi.checkSubjectCodeAndSubjectNameExist(
+                    updateForm.subjectCode.trim(),
+                    updateForm.subjectName.trim()
+                );
+            if (updateForm.subjectName !== checkUpdateForm.subjectName) {
+                if (!isValidSubjectName(updateForm.subjectName.trim())) {
+                    setSubjectNameError(
+                        "Tên môn không hợp lệ! (từ 6 đến 100 kí tự)"
+                    );
+                    isValid = false;
+                } else if (
+                    subjectCodeAndSubjectName &&
+                    updateForm.subjectName !== checkUpdateForm.subjectName
+                ) {
+                    subjectNameError("Đã có môn " + updateForm.subjectName);
+                    isValid = false;
+                }
+            }
+
+            // const subjectName = await subjectApi.checkSubjectNameExist(
+            //     updateForm.subjectName.trim()
+            // );
+
+            if (isValid) {
+                const data = await subjectApi.updateSubject(updateForm);
+                props.updateSubjectAction(data);
+
+                setUpdateForm({
+                    subjectCode: "",
+                    subjectName: "",
+                    numberOfCredit: "",
+                    teacherID: "",
+                    subjectID: "",
+                });
+                setShowUpdateForm(!showUpdateForm);
+                notify("Cập nhật thành công");
+
+                handleFocus();
+            }
         } catch (error) {
             console.error("Error updating data: ", error);
+
+            if (error.status === 500) {
+                notify("Cập nhật thất bại!");
+            }
         }
+    };
+
+    const handleCloseModalUpdate = () => {
+        setShowUpdateForm(!showUpdateForm);
+        setUpdateForm({
+            subjectCode: "",
+            subjectName: "",
+            numberOfCredit: "",
+            teacherID: "",
+            subjectID: "",
+        });
+        handleFocus();
     };
 
     const [subjectDelete, setSubjectDelete] = useState({
@@ -465,7 +619,14 @@ function Subject(props) {
                                     props.subjects.map((item) => (
                                         <tr key={item.subjectID}>
                                             <td>{item.subjectCode}</td>
-                                            <td>{item.subjectName}</td>
+                                            <td>
+                                                <Link
+                                                    to={`/detail-subject/${item.subjectID}`}
+                                                >
+                                                    {item.subjectName}
+                                                </Link>
+                                            </td>
+
                                             <td>{item.numberOfCredit}</td>
                                             <td>
                                                 {item.actualQuantity}
@@ -550,12 +711,13 @@ function Subject(props) {
                             className={cx("input-text")}
                             value={addForm.subjectCode}
                             onChange={handleAddChange}
+                            onFocus={handleFocus}
                             required
                         />
-                        <span
-                            className={cx("majorCode-error-message")}
-                            hidden
-                        ></span>
+                        <label className={cx("user-Error")}>
+                            {subjectCodeError}
+                        </label>
+
                         <label className={cx("label")}>Tên môn</label>
                         <input
                             type="text"
@@ -564,12 +726,12 @@ function Subject(props) {
                             className={cx("input-text")}
                             value={addForm.subjectName}
                             onChange={handleAddChange}
+                            onFocus={handleFocus}
                             required
                         />
-                        <span
-                            className={cx("majorName-error-message")}
-                            hidden
-                        ></span>
+                        <label className={cx("user-Error")}>
+                            {subjectNameError}
+                        </label>
 
                         <label className={cx("label")}>Số tín chỉ</label>
                         <input
@@ -579,8 +741,10 @@ function Subject(props) {
                             className={cx("input-text")}
                             value={addForm.numberOfCredit}
                             onChange={handleAddChange}
+                            onFocus={handleFocus}
                             required
                         />
+                        <label className={cx("user-Error")}></label>
 
                         <label className={cx("label")}>Chọn giáo viên</label>
                         <select
@@ -588,6 +752,7 @@ function Subject(props) {
                             name="teacherID"
                             value={addForm.teacherID || ""}
                             onChange={handleChangeSelected}
+                            onFocus={handleFocus}
                             required
                         >
                             <option value={""}>Chọn giáo viên</option>
@@ -602,9 +767,7 @@ function Subject(props) {
                             <button className={cx("btn-add")}>Thêm</button>
                             <button
                                 className={cx("btn-cancel")}
-                                onClick={() => {
-                                    setShowAddForm(!showAddForm);
-                                }}
+                                onClick={handleCloseModalAdd}
                             >
                                 Hủy
                             </button>
@@ -626,11 +789,11 @@ function Subject(props) {
                             className={cx("input-text")}
                             value={updateForm.subjectCode}
                             onChange={handleChange}
+                            onFocus={handleFocus}
                         />
-                        <span
-                            className={cx("majorCode-error-message")}
-                            hidden
-                        ></span>
+                        <label className={cx("user-Error")}>
+                            {subjectCodeError}
+                        </label>
                         <label htmlFor="subjectName" className={cx("label")}>
                             Tên môn
                         </label>
@@ -641,11 +804,11 @@ function Subject(props) {
                             className={cx("input-text")}
                             value={updateForm.subjectName}
                             onChange={handleChange}
+                            onFocus={handleFocus}
                         />
-                        <span
-                            className={cx("majorName-error-message")}
-                            hidden
-                        ></span>
+                        <label className={cx("user-Error")}>
+                            {subjectNameError}
+                        </label>
 
                         <label htmlFor="numberOfCredit" className={cx("label")}>
                             Số tín chỉ
@@ -657,7 +820,10 @@ function Subject(props) {
                             className={cx("input-text")}
                             value={updateForm.numberOfCredit}
                             onChange={handleChange}
+                            onFocus={handleFocus}
                         />
+
+                        <label className={cx("user-Error")}></label>
 
                         <label className={cx("label")}>Chọn giáo viên</label>
                         <select
@@ -665,6 +831,7 @@ function Subject(props) {
                             name="teacherID"
                             value={updateForm.teacherID || ""}
                             onChange={handleChangeSelectedUpdate}
+                            onFocus={handleFocus}
                             required
                         >
                             <option value="">Chọn giáo viên</option>
@@ -681,9 +848,7 @@ function Subject(props) {
                             </button>
                             <button
                                 className={cx("btn-cancel")}
-                                onClick={() => {
-                                    setShowUpdateForm(!showUpdateForm);
-                                }}
+                                onClick={handleCloseModalUpdate}
                             >
                                 Hủy
                             </button>

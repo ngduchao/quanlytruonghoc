@@ -128,4 +128,9 @@ public class TeacherServiceImpl implements TeacherService{
 	public boolean isExistsByEmail(String email) {
 		return repository.existsByEmail(email);
 	}
+
+	@Override
+	public boolean isExistsByPhoneNumber(String phoneNumber) {
+		return repository.existsByPhoneNumber(phoneNumber);
+	}
 }

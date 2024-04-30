@@ -1,6 +1,6 @@
 package datn.qlth.dto;
 
-import datn.qlth.validation.subject.SubjectCodeExists;
+import datn.qlth.validation.subject.SubjectIDExists;
 import datn.qlth.validation.user.UserCodeExists;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -14,6 +14,6 @@ public class RegistrationSubjectForStudentDTO {
 	@UserCodeExists
 	private String userCode;
 	
-	@SubjectCodeExists
-	private String subjectCode;
+	@SubjectIDExists
+	private Integer subjectID;
 }

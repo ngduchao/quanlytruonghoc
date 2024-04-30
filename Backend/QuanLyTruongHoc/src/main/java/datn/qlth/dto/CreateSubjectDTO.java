@@ -3,7 +3,6 @@ package datn.qlth.dto;
 import org.hibernate.validator.constraints.Length;
 
 import datn.qlth.validation.subject.SubjectCodeNotExists;
-import datn.qlth.validation.subject.SubjectNameNotExists;
 import datn.qlth.validation.teacher.TeacherIDExists;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -25,7 +24,6 @@ public class CreateSubjectDTO {
 	@NotBlank(message = "The subjectName mustn't be null value")
 	@Length(max = 100, message = "The subjectName length is max 100 characters")
 	@Length(min = 6, message = "The subjectName length is min 6 characters")
-	@SubjectNameNotExists
 	private String subjectName;
 	
 	@Min(value = 0, message = "The numberOfCredit must be greater than 0")

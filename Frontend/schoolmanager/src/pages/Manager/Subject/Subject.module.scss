@@ -134,7 +134,7 @@
 }
 
 .addition-form {
-    height: 300px;
+    height: 350px;
     width: 500px;
     position: fixed;
     top: 40%;
@@ -218,6 +218,14 @@
             &:hover {
                 background: linear-gradient(0deg, rgba(0, 0, 0, 0.344), rgba(0, 0, 0, 0.344)), var(--primary);
             }
+        }
+
+        .user-Error {
+            font-size: 1.1rem;
+            color: red;
+            grid-column: span 2;
+            text-align: start;
+            line-height: 1px;
         }
     }
 }
@@ -305,8 +313,8 @@
 
 
 .update-form{
-    height: 320px;
-    width: 450px;
+    height: 340px;
+    width: 500px;
     position: fixed;
     top: 40%;
     left: 50%;
@@ -389,6 +397,14 @@
             &:hover {
                 background: linear-gradient(0deg, rgba(0, 0, 0, 0.344), rgba(0, 0, 0, 0.344)), var(--primary);
             }
+        }
+
+        .user-Error {
+            font-size: 1.1rem;
+            color: red;
+            grid-column: span 2;
+            text-align: start;
+            line-height: 1px;
         }
     }
 }

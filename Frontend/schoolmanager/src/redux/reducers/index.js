@@ -7,6 +7,7 @@ import Major from "./majorReducer";
 import Teacher from "./teacherReducer";
 import Classroom from "./classroomReducer";
 import Subject from "./subjectReducer";
+import RegistrationSubject from "./registrationSubjectReducer";
 
 export default combineReducers({
     loginInfor,
@@ -16,4 +17,5 @@ export default combineReducers({
     Teacher,
     Classroom,
     Subject,
+    RegistrationSubject,
 });

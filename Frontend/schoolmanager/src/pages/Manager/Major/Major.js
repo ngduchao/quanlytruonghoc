@@ -13,6 +13,7 @@ import { useCallback, useEffect, useState } from "react";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import toast, { Toaster } from "react-hot-toast";
+import ReactPaginate from "react-paginate";
 
 import styles from "./Major.module.scss";
 import SubHeader from "../SubHeader/SubHeader";
@@ -30,7 +31,6 @@ import {
     selectSize,
 } from "../../../redux/selectors/majorSelector";
 import facultyApi from "../../../services/api/facultyApi";
-import ReactPaginate from "react-paginate";
 
 const cx = classNames.bind(styles);
 
@@ -169,6 +169,22 @@ function Major(props) {
         isAscendingMajorCode,
     ]);
 
+    const isValidMajorCode = (majorCode) => {
+        return majorCode.length >= 4 && majorCode.length <= 30;
+    };
+
+    const isValidMajorName = (majorName) => {
+        return majorName.length >= 6 && majorName.length <= 100;
+    };
+
+    const [majorCodeError, setMajorCodeError] = useState("");
+    const [majorNameError, setMajorNameError] = useState("");
+
+    const handleFocus = () => {
+        setMajorCodeError("");
+        setMajorNameError("");
+    };
+
     const [addForm, setAddForm] = useState({
         majorCode: "",
         majorName: "",
@@ -198,19 +214,69 @@ function Major(props) {
 
     const handleSubmitCreate = async (e) => {
         e.preventDefault();
+        let isValid = true;
         try {
-            const data = await majorApi.createMajor(addForm);
-            props.addMajorAction(data);
+            const majorCode = await majorApi.checkMajorCodeExist(
+                addForm.majorCode.trim()
+            );
 
-            setAddForm({ majorCode: "", majorName: "", facultyID: "" });
-            setShowAddForm(!showAddForm);
-            notify("Thêm mới thành công");
+            const majorName = await majorApi.checkMajorNameExist(
+                addForm.majorName.trim()
+            );
+
+            if (!isValidMajorCode(addForm.majorCode.trim())) {
+                setMajorCodeError("Mã ngành không hợp lệ! (từ 4 đến 30 kí tự)");
+                isValid = false;
+            }
+            if (majorCode) {
+                setMajorCodeError("Mã ngành đã tồn tại!");
+                isValid = false;
+            }
+
+            if (!isValidMajorName(addForm.majorName.trim())) {
+                setMajorNameError(
+                    "Tên ngành không hợp lệ! (từ 6 đến 100 kí tự)"
+                );
+                isValid = false;
+            }
+            if (majorName) {
+                setMajorNameError("Tên ngành đã tồn tại!");
+                isValid = false;
+            }
+
+            if (isValid) {
+                const data = await majorApi.createMajor(addForm);
+                props.addMajorAction(data);
+
+                setAddForm({ majorCode: "", majorName: "", facultyID: "" });
+                setShowAddForm(!showAddForm);
+                notify("Thêm mới thành công");
+
+                handleFocus();
+            }
         } catch (error) {
             console.error("Error creating data: ", error);
+
+            if (error.status === 500) {
+                notify("Thêm mới thất bại!");
+            }
         }
     };
 
+    const handleCloseModalAdd = () => {
+        setShowAddForm(!showAddForm);
+        setAddForm({ majorCode: "", majorName: "", facultyID: "" });
+        handleFocus();
+    };
+
     const [updateForm, setUpdateForm] = useState({
+        majorCode: "",
+        majorName: "",
+        facultyID: "",
+        majorID: "",
+    });
+
+    const [checkUpdateForm, setCheckUpdateForm] = useState({
         majorCode: "",
         majorName: "",
         facultyID: "",
@@ -222,6 +288,16 @@ function Major(props) {
             ...updateForm,
             facultyID: e.target.value, // Gán giá trị của thẻ option vào updateForm
         });
+    };
+
+    const handleChange = (e) => {
+        setUpdateForm({
+            ...updateForm,
+            [e.target.name]: e.target.value,
+        });
+        if (e.target.name === "facultyID") {
+            handleChangeSelectedUpdate(e); // Cập nhật giá trị từ option
+        }
     };
 
     const handleShowUpdateModel = (
@@ -236,35 +312,80 @@ function Major(props) {
             facultyID,
             majorID,
         });
-        setShowUpdateForm(!showUpdateForm);
-    };
-
-    const handleChange = (e) => {
-        setUpdateForm({
-            ...updateForm,
-            [e.target.name]: e.target.value,
+        setCheckUpdateForm({
+            majorCode,
+            majorName,
+            facultyID,
+            majorID,
         });
-        if (e.target.name === "facultyID") {
-            handleChangeSelectedUpdate(e); // Cập nhật giá trị từ option
-        }
+        setShowUpdateForm(!showUpdateForm);
     };
 
     const handleSubmitUpdate = async (e) => {
         e.preventDefault();
+        let isValid = true;
         try {
-            const data = await majorApi.updateMajor(updateForm);
-            props.updateMajorAction(data);
+            const majorCode = await majorApi.checkMajorCodeExist(
+                updateForm.majorCode.trim()
+            );
 
-            setUpdateForm({
-                majorCode: "",
-                majorName: "",
-                facultyID: "",
-                majorID: "",
-            });
-            setShowUpdateForm(!showUpdateForm);
-            notify("Cập nhật thành công");
+            const majorName = await majorApi.checkMajorNameExist(
+                updateForm.majorName.trim()
+            );
+
+            if (checkUpdateForm.majorCode !== updateForm.majorCode) {
+                if (!isValidMajorCode(updateForm.majorCode.trim())) {
+                    setMajorCodeError(
+                        "Mã ngành không hợp lệ! (từ 4 đến 30 kí tự)"
+                    );
+                    isValid = false;
+                }
+                if (
+                    majorCode &&
+                    checkUpdateForm.majorCode !== updateForm.majorCode
+                ) {
+                    setMajorCodeError("Mã ngành đã tồn tại!");
+                    isValid = false;
+                }
+            }
+
+            if (checkUpdateForm.majorName !== updateForm.majorName) {
+                if (!isValidMajorName(updateForm.majorName.trim())) {
+                    setMajorNameError(
+                        "Tên ngành không hợp lệ! (từ 6 đến 100 kí tự)"
+                    );
+                    isValid = false;
+                }
+                if (
+                    majorName &&
+                    checkUpdateForm.majorName !== updateForm.majorName
+                ) {
+                    setMajorNameError("Tên ngành đã tồn tại!");
+                    isValid = false;
+                }
+            }
+
+            if (isValid) {
+                const data = await majorApi.updateMajor(updateForm);
+                props.updateMajorAction(data);
+
+                setUpdateForm({
+                    majorCode: "",
+                    majorName: "",
+                    facultyID: "",
+                    majorID: "",
+                });
+                setShowUpdateForm(!showUpdateForm);
+                notify("Cập nhật thành công");
+
+                handleFocus();
+            }
         } catch (error) {
             console.error("Error updating data: ", error);
+
+            if (error.status === 500) {
+                notify("Cập nhật thất bại!");
+            }
         }
     };
 
@@ -539,12 +660,13 @@ function Major(props) {
                             className={cx("input-text")}
                             value={addForm.majorCode}
                             onChange={handleAddChange}
+                            onFocus={handleFocus}
                             required
                         />
-                        <span
-                            className={cx("majorCode-error-message")}
-                            hidden
-                        ></span>
+                        <label className={cx("user-Error")}>
+                            {majorCodeError}
+                        </label>
+
                         <label className={cx("label")}>Tên ngành</label>
                         <input
                             type="text"
@@ -553,12 +675,12 @@ function Major(props) {
                             className={cx("input-text")}
                             value={addForm.majorName}
                             onChange={handleAddChange}
+                            onFocus={handleFocus}
                             required
                         />
-                        <span
-                            className={cx("majorName-error-message")}
-                            hidden
-                        ></span>
+                        <label className={cx("user-Error")}>
+                            {majorNameError}
+                        </label>
 
                         <label className={cx("label")}>Chọn khoa</label>
                         <select
@@ -566,6 +688,7 @@ function Major(props) {
                             name="facultyID"
                             value={addForm.facultyID || ""}
                             onChange={handleChangeSelected}
+                            onFocus={handleFocus}
                             required
                         >
                             <option value={""}>Chọn khoa</option>
@@ -580,9 +703,7 @@ function Major(props) {
                             <button className={cx("btn-add")}>Thêm</button>
                             <button
                                 className={cx("btn-cancel")}
-                                onClick={() => {
-                                    setShowAddForm(!showAddForm);
-                                }}
+                                onClick={handleCloseModalAdd}
                             >
                                 Hủy
                             </button>
@@ -605,10 +726,9 @@ function Major(props) {
                             value={updateForm.majorCode}
                             onChange={handleChange}
                         />
-                        <span
-                            className={cx("majorCode-error-message")}
-                            hidden
-                        ></span>
+                        <label className={cx("user-Error")}>
+                            {majorCodeError}
+                        </label>
                         <label htmlFor="majorName" className={cx("label")}>
                             Tên ngành
                         </label>
@@ -620,10 +740,9 @@ function Major(props) {
                             value={updateForm.majorName}
                             onChange={handleChange}
                         />
-                        <span
-                            className={cx("majorName-error-message")}
-                            hidden
-                        ></span>
+                        <label className={cx("user-Error")}>
+                            {majorNameError}
+                        </label>
 
                         <label className={cx("label")}>Chọn khoa</label>
                         <select

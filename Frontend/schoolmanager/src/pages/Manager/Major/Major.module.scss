@@ -169,7 +169,7 @@
 }
 
 .addition-form {
-    height: 270px;
+    height: 300px;
     width: 500px;
     position: fixed;
     top: 40%;
@@ -254,6 +254,14 @@
                 background: linear-gradient(0deg, rgba(0, 0, 0, 0.344), rgba(0, 0, 0, 0.344)), var(--primary);
             }
         }
+
+        .user-Error {
+            font-size: 1.1rem;
+            color: red;
+            grid-column: span 2;
+            text-align: start;
+            line-height: 1px;
+        }
     }
 }
 
@@ -267,6 +275,8 @@
     width: 1200px;
     border-collapse: collapse;
     user-select: text;
+
+    height: 450px;
 
 
     .action-row{
@@ -340,7 +350,7 @@
 
 
 .update-form{
-    height: 280px;
+    height: 300px;
     width: 450px;
     position: fixed;
     top: 40%;
@@ -424,6 +434,14 @@
             &:hover {
                 background: linear-gradient(0deg, rgba(0, 0, 0, 0.344), rgba(0, 0, 0, 0.344)), var(--primary);
             }
+        }
+
+        .user-Error {
+            font-size: 1.1rem;
+            color: red;
+            grid-column: span 2;
+            text-align: start;
+            line-height: 1px;
         }
     }
 }

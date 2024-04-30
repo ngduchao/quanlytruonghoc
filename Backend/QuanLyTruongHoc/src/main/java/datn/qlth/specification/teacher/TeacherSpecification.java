@@ -40,6 +40,11 @@ public class TeacherSpecification {
 			CustomSpecification SpecializeLevel = new CustomSpecification("specializeLevel", filter.getSpecializeLevel());
 			where = where.and(SpecializeLevel);
 		}
+		
+		if(filter.getClassRoomID() != null) {
+			CustomSpecification classRoomID = new CustomSpecification("classRoomID", filter.getClassRoomID());
+			where = where.and(classRoomID);
+		}
 
 		return where;
 	}

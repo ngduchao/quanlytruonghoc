@@ -1,16 +1,16 @@
 USE SchoolManagement;
                     
 INSERT INTO `Faculty` (`faculty_code`, `faculty_name`)
-VALUES				('KH001', 'Khoa công nghệ thông tin'),
-					('KH002', 'Khoa kế kiểm'),
-					('KH003', 'Khoa ngoại ngữ - du lịch'),
-					('KH004', 'Khoa điện'),
-					('KH005', 'Khoa cơ khí'),
-					('KH006', 'Khoa điện tử'),
-					('KH007', 'Khoa công nghệ ô tô'),
-					('KH008', 'Khoa quản trị kinh doanh'),
-					('KH009', 'Khoa công nghệ may - TKTT'),
-					('KH010', 'Khoa công nghệ hóa');
+VALUES				('KH0001', 'Khoa công nghệ thông tin'),
+					('KH0002', 'Khoa kế kiểm'),
+					('KH0003', 'Khoa ngoại ngữ - du lịch'),
+					('KH0004', 'Khoa điện'),
+					('KH0005', 'Khoa cơ khí'),
+					('KH0006', 'Khoa điện tử'),
+					('KH0007', 'Khoa công nghệ ô tô'),
+					('KH0008', 'Khoa quản trị kinh doanh'),
+					('KH0009', 'Khoa công nghệ may - TKTT'),
+					('KH0010', 'Khoa công nghệ hóa');
                     
 INSERT INTO `Major` (`major_code`, `major_name`, `faculty_id`)
 VALUES 				('KHMT', 'Khoa học máy tính', 1),
@@ -46,17 +46,17 @@ VALUES 				('KHMT', 'Khoa học máy tính', 1),
                     ('HTP', 'Công nghệ thực phẩm', 10),
                     ('VLDM', 'Công nghệ vật liệu dệt, may', 9);
                     
-INSERT INTO `Teacher` (`teacher_code`, `teacher_name`, `email`, `phone_number`, `birth_day`, `home_town`, `specialize_level`)
-VALUES					('TC001', 'Nguyễn Thị Hồng', 'nguyenthihong@email.com', '0987654321', '1980-05-15', 'Hà Nội', 'TIENSI'),
-						('TC002', 'Trần Văn Tuấn', 'tranvantuan@email.com', '0123456789', '1975-10-20', 'Hải Phòng', 'THACSI'),
-						('TC003', 'Phạm Thị Hương', 'phamthihuong@email.com', '0345678912', '1990-08-25', 'Nam Định', 'DAIHOC'),
-						('TC004', 'Lê Quang Huy', 'lequanghuy@email.com', '0567891234', '1988-03-10', 'Hà Nội', 'TIENSI'),
-						('TC005', 'Hoàng Minh Ngọc', 'hoangminhngoc@email.com', '0789123456', '1983-12-05', 'Bắc Ninh', 'THACSI'),
-						('TC006', 'Nguyễn Thành Long', 'nguyenthanhlong@email.com', '0891234567', '1985-07-20', 'Hà Nam', 'DAIHOC'),
-						('TC007', 'Trần Thị Lan', 'tranthilan@email.com', '0909876543', '1979-09-30', 'Quảng Ninh', 'TIENSI'),
-						('TC008', 'Phan Văn Nam', 'phanvannam@email.com', '0654321890', '1972-11-18', 'Hà Nội', 'THACSI'),
-						('TC009', 'Lý Thị Thu', 'lythithu@email.com', '0432187659', '1987-04-25', 'Bắc Ninh', 'DAIHOC'),
-						('TC010', 'Trương Văn Tùng', 'truongvantung@email.com', '0219876543', '1981-06-12', 'Thái Bình', 'TIENSI');
+INSERT INTO `Teacher` (`teacher_code`, `teacher_name`, `email`, `phone_number`, `birth_day`, `home_town`, `gender`, `specialize_level`)
+VALUES					('TC0001', 'Nguyễn Thị Hồng', 'nguyenthihong@email.com', '0987654321', '1980-05-15', 'Hà Nội', 'FEMALE', 'TIENSI'),
+						('TC0002', 'Trần Văn Tuấn', 'tranvantuan@email.com', '0333456789', '1975-10-20', 'Hải Phòng', 'MALE', 'THACSI'),
+						('TC0003', 'Phạm Thị Hương', 'phamthihuong@email.com', '0345678912', '1990-08-25', 'Nam Định', 'FEMALE', 'DAIHOC'),
+						('TC0004', 'Lê Quang Huy', 'lequanghuy@email.com', '0567891234', '1988-03-10', 'Hà Nội', 'MALE', 'TIENSI'),
+						('TC0005', 'Hoàng Minh Ngọc', 'hoangminhngoc@email.com', '0789123456', '1983-12-05', 'Bắc Ninh', 'MALE', 'THACSI'),
+						('TC0006', 'Nguyễn Thành Long', 'nguyenthanhlong@email.com', '0891234567', '1985-07-20', 'Hà Nam', 'MALE', 'DAIHOC'),
+						('TC0007', 'Trần Thị Lan', 'tranthilan@email.com', '0909876543', '1979-09-30', 'Quảng Ninh', 'FEMALE', 'TIENSI'),
+						('TC0008', 'Phan Văn Nam', 'phanvannam@email.com', '0654321890', '1972-11-18', 'Hà Nội', 'MALE', 'THACSI'),
+						('TC0009', 'Lý Thị Thu', 'lythithu@email.com', '0532187659', '1987-04-25', 'Bắc Ninh', 'FEMALE','DAIHOC'),
+						('TC0010', 'Trương Văn Tùng', 'truongvantung@email.com', '0319876543', '1981-06-12', 'Thái Bình', 'MALE','TIENSI');
 
 INSERT INTO `Subject` (`subject_code`, `subject_name`, `number_of_credit`, `major_id`, `teacher_id`, `max_quantity`, `actual_quantity`)
 VALUES					('FL6085.1', 'Tiếng Anh Công nghệ thông tin cơ bản 1', 5, 1, 1, 70, 5),
@@ -88,15 +88,15 @@ VALUES					('KHMT01', 'Khoa học máy tính 1', 2, NOW(), 15, 1, 1),
                         ('KTPM01', 'Kỹ thuật phần mềm 1', 1, NOW(), 15, 2, 7),
                         ('CNTT01', 'Công nghệ thông tin 1', 0, NOW(), 15, 4, 7);
 
-INSERT INTO `User` (`user_code`, `username`, `email`, `password`, `first_name`, `last_name`, `phone_number`, `birth_day`, `home_town`, `role`, `status`, `class_id`)
-VALUES   			('2020605340', 'ngduchao', 'duchao0202@gmail.com', '$2a$10$W2neF9.6Agi6kAKVq8q3fec5dHW8KUA.b0VSIGdIZyUravfLpyIFi', 'Nguyễn', 'Đức Hảo', '0396180331', '2002-02-02', 'Bắc Ninh', 'ADMIN', 1, NULL),
-					('2020605341', 'nguyena', 'nguyenvana@gmail.com', '$2a$10$W2neF9.6Agi6kAKVq8q3fec5dHW8KUA.b0VSIGdIZyUravfLpyIFi', 'Nguyễn', 'Văn A', '0987654321', '1978-11-02', 'Hà Nội', 'ADMIN', 1, NULL),
-                    ('2020605342', 'nguyenb', 'nguyenvanb@gmail.com', '$2a$10$W2neF9.6Agi6kAKVq8q3fec5dHW8KUA.b0VSIGdIZyUravfLpyIFi', 'Nguyễn', 'Văn B', '0123456789', '2002-05-21', 'Hà Nội', 'USER', 1, 1),
-                    ('2020605343', 'tranvana', 'tranvana@gmail.com', '$2a$10$W2neF9.6Agi6kAKVq8q3fec5dHW8KUA.b0VSIGdIZyUravfLpyIFi', 'Trần', 'Văn A', '0987664821', '2002-02-21', 'Nam Định', 'USER', 1, 1),
-                    ('2020605344', 'tranvanb', 'tranvanb@gmail.com', '$2a$10$W2neF9.6Agi6kAKVq8q3fec5dHW8KUA.b0VSIGdIZyUravfLpyIFi', 'Trần', 'Văn B', '0123248789', '2002-03-12', 'Hải Phòng', 'USER', 1, 2),
-                    ('2020605345', 'tranvanc', 'tranvanc@gmail.com', '$2a$10$W2neF9.6Agi6kAKVq8q3fec5dHW8KUA.b0VSIGdIZyUravfLpyIFi', 'Trần', 'Văn C', '0129816789', '2002-05-18', 'Quảng Ninh', 'USER', 1, 2),
-                    ('2020605347', 'tranvanr', 'tranvanr@gmail.com', '$2a$10$W2neF9.6Agi6kAKVq8q3fec5dHW8KUA.b0VSIGdIZyUravfLpyIFi', 'Trần', 'Văn R', '0121216789', '2002-05-18', 'Quảng Ninh', 'USER', 1, 2),
-                    ('2020605346', 'nguyenc', 'nguyenvanc@gmail.com', '$2a$10$W2neF9.6Agi6kAKVq8q3fec5dHW8KUA.b0VSIGdIZyUravfLpyIFi', 'Nguyễn', 'Văn C', '0123452456', '2002-09-07', 'Hà Nội', 'USER', 1, 4);
+INSERT INTO `User` (`user_code`, `username`, `email`, `password`, `first_name`, `last_name`, `phone_number`, `birth_day`, `home_town`, `gender`, `role`, `status`, `class_id`)
+VALUES   			('2020605340', 'ngduchao', 'duchao0202@gmail.com', '$2a$10$W2neF9.6Agi6kAKVq8q3fec5dHW8KUA.b0VSIGdIZyUravfLpyIFi', 'Nguyễn Đức', 'Hảo', '0396180331', '2002-02-02', 'Bắc Ninh', 'MALE', 'ADMIN', 1, NULL),
+					('2020605341', 'nguyena', 'nguyenvana@gmail.com', '$2a$10$W2neF9.6Agi6kAKVq8q3fec5dHW8KUA.b0VSIGdIZyUravfLpyIFi', 'Nguyễn Văn', 'A', '0987654321', '1978-11-02', 'Hà Nội', 'MALE', 'ADMIN', 1, NULL),
+                    ('2020605342', 'nguyenb', 'nguyenvanb@gmail.com', '$2a$10$W2neF9.6Agi6kAKVq8q3fec5dHW8KUA.b0VSIGdIZyUravfLpyIFi', 'Nguyễn Văn', 'B', '0323456789', '2002-05-21', 'Hà Nội', 'MALE', 'USER', 1, 1),
+                    ('2020605343', 'tranvana', 'tranvana@gmail.com', '$2a$10$W2neF9.6Agi6kAKVq8q3fec5dHW8KUA.b0VSIGdIZyUravfLpyIFi', 'Trần Văn', 'A', '0987664821', '2002-02-21', 'Nam Định', 'MALE', 'USER', 1, 1),
+                    ('2020605344', 'tranvanb', 'tranvanb@gmail.com', '$2a$10$W2neF9.6Agi6kAKVq8q3fec5dHW8KUA.b0VSIGdIZyUravfLpyIFi', 'Trần Văn', 'B', '0323248789', '2002-03-12', 'Hải Phòng', 'MALE', 'USER', 1, 2),
+                    ('2020605345', 'tranvanc', 'tranvanc@gmail.com', '$2a$10$W2neF9.6Agi6kAKVq8q3fec5dHW8KUA.b0VSIGdIZyUravfLpyIFi', 'Trần Văn', 'C', '0329816789', '2002-05-18', 'Quảng Ninh', 'MALE', 'USER', 1, 2),
+                    ('2020605347', 'tranvanr', 'tranvanr@gmail.com', '$2a$10$W2neF9.6Agi6kAKVq8q3fec5dHW8KUA.b0VSIGdIZyUravfLpyIFi', 'Trần Văn', 'R', '0311216789', '2002-05-18', 'Quảng Ninh', 'MALE', 'USER', 1, 2),
+                    ('2020605346', 'nguyenc', 'nguyenvanc@gmail.com', '$2a$10$W2neF9.6Agi6kAKVq8q3fec5dHW8KUA.b0VSIGdIZyUravfLpyIFi', 'Nguyễn Văn', 'C', '0353452456', '2002-09-07', 'Hà Nội', 'MALE', 'USER', 1, 4);
 
 INSERT INTO `Registration_subject` (`subject_id`, `user_id`)
 VALUES								(1, 3),

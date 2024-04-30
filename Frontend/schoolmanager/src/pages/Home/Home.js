@@ -1,54 +1,45 @@
-import { useLocation } from "react-router-dom";
-import { useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
+import { useEffect, useState } from "react";
 import classNames from "classnames/bind";
 
 import styles from "./Home.module.scss";
+import thump from "../../../src/assets/images/thump.jpg";
+import config from "../../config/index";
 
 const cx = classNames.bind(styles);
 
 function Home() {
     const location = useLocation();
+    const [loaded, setLoaded] = useState(false);
 
     useEffect(() => {
         document.title = "EduHub - Quản lý trường học";
+        setTimeout(() => {
+            setLoaded(true);
+        }, 100);
     }, [location.pathname]);
 
     return (
-        <div>
-            {/* <Link to={config.routes.managerFaculty}>Manager Page</Link>
-            <br />
-            <Link to={config.routes.profile}>Profile Page</Link>
-            <br />
-            <Link to={config.routes.login}>Login Page</Link>
-            <br />
-            <Link to={config.routes.feedback}>Feedback Page</Link> */}
+        <div className={cx("wrapper", { active: loaded })}>
+            <img src={thump} alt="" className={cx("thump")} />
 
-            <div className={cx("container")}>
-                <h1 className={cx("title")}>EduHub</h1>
+            <div>
+                <div className={cx("container")}>
+                    <p className={cx("title1")}>Chào mừng đến với EduHub</p>
+                    <p className={cx("title2")}>
+                        Hãy bắt đầu hành trình của bạn ngay bây giờ
+                    </p>
+                    <p className={cx("title3")}>
+                        Liên hệ với chúng tôi ngay hôm nay để có thể sử dụng
+                        dịch vụ hoàn hảo cho việc quản lý trường học của bạn.
+                    </p>
 
-                <h2 className={cx("sub-title")}>
-                    Một nền tảng giáo dục chuyên dụng cung cấp nhiều dịch vụ và
-                    hỗ trợ cho trường học và giáo viên
-                </h2>
-
-                <h3 className={cx("content1")}>
-                    EduHub cung cấp cho các trường học một nền tảng an toàn, bảo
-                    mật để quản lý.
-                </h3>
-                <div className="sub-content">
-                    <h3 className={cx("content2")}>
-                        EduHub tập hợp các tài nguyên giáo dục tốt nhất có sẵn
-                        trực tuyến vào một nền tảng có thể tìm kiếm đơn giản,
-                        cho phép bạn tìm thấy những ý tưởng và tài liệu mới để
-                        hỗ trợ việc giảng dạy của mình một cách nhanh chóng và
-                        đơn giản.
-                    </h3>
-                    <h3 className={cx("content3")}>
-                        Các tài nguyên mới đang được bổ sung thường xuyên để đảm
-                        bảo bạn có quyền truy cập vào các tài nguyên mới nhất và
-                        thậm chí bạn có thể tải lên và tạo tài nguyên của riêng
-                        mình để chia sẻ với cộng đồng nếu muốn.
-                    </h3>
+                    <Link
+                        className={cx("contact-us")}
+                        to={config.routes.contactUs}
+                    >
+                        Liên hệ chúng tôi
+                    </Link>
                 </div>
             </div>
         </div>

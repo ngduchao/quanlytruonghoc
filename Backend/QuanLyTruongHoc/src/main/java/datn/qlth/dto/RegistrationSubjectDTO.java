@@ -11,13 +11,13 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class RegistrationSubjectDTO {
-	
-	private Integer ID;
+public class RegistrationSubjectDTO{
 	
 	private UserDTO user;
 	
 	private SubjectDTO subject;
+	
+	private Integer RegistrationSubjectID;
 	
 	private Float regularPoint1;
 	
@@ -30,16 +30,23 @@ public class RegistrationSubjectDTO {
 	@JsonFormat(pattern = "yyyy-MM-dd")
 	private Date createdDate;
 	
+//	private Integer userID;
+	
+//	private Integer subjectID;
+	
+	
 	@Data
 	@NoArgsConstructor
 	@AllArgsConstructor
 	public static class UserDTO{
 		
-		private Long userID;
+		private Integer userID;
 		
 		private String userCode;
 		
 		private String fullName;
+		
+		private ClassRoomDTO classroom;
 	}
 	
 	@Data
@@ -52,6 +59,8 @@ public class RegistrationSubjectDTO {
 		private String subjectCode;
 		
 		private String subjectName;
+		
+		private Integer numberOfCredit;
 		
 		private TeacherDTO teacher; 
 	}
@@ -66,5 +75,20 @@ public class RegistrationSubjectDTO {
 		private String teacherCode;
 		
 		private String teacherName;
+		
+		private String phoneNumber;
+	}
+	
+	@Data
+	@NoArgsConstructor
+	@AllArgsConstructor
+	public static class ClassRoomDTO{
+		
+		private Integer classRoomID;
+		
+		private String classRoomCode;
+		
+		private String classRoomName;
+		
 	}
 }

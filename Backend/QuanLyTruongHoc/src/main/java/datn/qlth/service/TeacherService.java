@@ -32,4 +32,6 @@ public interface TeacherService {
 	
 	public boolean isExistsByEmail(String email);
 	
+	public boolean isExistsByPhoneNumber(String phoneNumber);
+	
 }

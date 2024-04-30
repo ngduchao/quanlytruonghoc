@@ -11,6 +11,13 @@ export function getListSubjectAction(subjects, page, totalElements) {
     };
 }
 
+export function getListSubjectNotPageAction(subjects) {
+    return {
+        type: types.GET_LIST_SUBJECT_NOT_PAGINATION,
+        payload: subjects,
+    };
+}
+
 export function updateSubjectAction(subject) {
     return {
         type: types.UPDATE_SUBJECT,

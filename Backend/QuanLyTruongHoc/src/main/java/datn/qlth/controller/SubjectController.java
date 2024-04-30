@@ -29,7 +29,9 @@ import datn.qlth.dto.CreateSubjectDTO;
 import datn.qlth.dto.SubjectDTO;
 import datn.qlth.dto.UpdateSubjectDTO;
 import datn.qlth.dto.filter.SubjectFilterForm;
+import datn.qlth.entity.RegistrationSubject;
 import datn.qlth.entity.Subject;
+import datn.qlth.service.RegistrationSubjectService;
 import datn.qlth.service.SubjectService;
 import datn.qlth.validation.subject.SubjectCodeExists;
 import datn.qlth.validation.subject.SubjectIDExists;
@@ -44,23 +46,13 @@ public class SubjectController {
 	private SubjectService service;
 	
 	@Autowired
-	private ModelMapper modelMapper;
+	private RegistrationSubjectService registrationSubjectService;
 	
-//	@GetMapping()
-//	public ResponseEntity<?> getAllSubjects(
-//			@RequestParam(value = "search", required = false) String search,
-//			SubjectFilterForm filter){
-//		List<Subject> list = service.getAllSubjects(search, filter);
-//		
-//		List<SubjectDTO> dtos = modelMapper.map(list, new TypeToken<List<SubjectDTO>>() {
-//		}.getType());
-//		
-//		return new ResponseEntity<>(dtos, HttpStatus.OK);
-//	}
+	@Autowired
+	private ModelMapper modelMapper;
 	
 	@GetMapping()
 	public ResponseEntity<?> getAllSubjects (
-//			@PageableDefault(sort = {"subjectID"}, direction = Sort.Direction.ASC) 
 			Pageable pageable,
 			@RequestParam(value = "search", required = false) String search,
 			SubjectFilterForm filter) {
@@ -75,9 +67,31 @@ public class SubjectController {
 		List<SubjectDTO> dtos = modelMapper.map(entityPages.getContent(), new TypeToken<List<SubjectDTO>>() {
 		}.getType());
 		
-		Page<SubjectDTO> dtoPage = new PageImpl<>(dtos, pageable, entityPages.getTotalElements());
+		System.out.println(dtos);
+		
+		List<SubjectDTO> dtos2 = dtos.stream().map(e -> {
+			
+			List<RegistrationSubject> list = registrationSubjectService.getRegistrationSubjectsBySubject(e.getSubjectID());
+			
+			e.setActualQuantity(list.size());
+			
+			return e;
+		}).toList();
+		
+		Page<SubjectDTO> dtoPage = new PageImpl<>(dtos2, pageable, entityPages.getTotalElements());
 		
 		return new ResponseEntity<>(dtoPage, HttpStatus.OK);
+	}
+	
+	@GetMapping("/get-list-subject")
+	public ResponseEntity<?> getListSubjects(){
+		
+		List<Subject> list = service.getListSubjects();
+		
+		List<SubjectDTO> dtos = modelMapper.map(list, new TypeToken<List<SubjectDTO>>() {
+		}.getType());
+		
+		return new ResponseEntity<>(dtos, HttpStatus.OK);
 	}
 	
 	@GetMapping("/{id}")
@@ -144,5 +158,29 @@ public class SubjectController {
 		service.addSubjectToMajor(form);
 		
 		return new ResponseEntity<>("Add Subject For Major Successfully!", HttpStatus.OK);
+	}
+	
+	@GetMapping(value = "/subjectCode/{subjectCode}")
+	public ResponseEntity<?> existsSubjectBySubjectCode(@PathVariable(name = "subjectCode") String subjectCode){
+		
+		boolean result = service.isSubjectExistsBySubjectCode(subjectCode);
+		
+		return new ResponseEntity<>(result, HttpStatus.OK);
+	}
+	
+	@GetMapping(value = "/subjectName/{subjectName}")
+	public ResponseEntity<?> existsSubjectBySubjectName(@PathVariable(name = "subjectName") String subjectName){
+		
+		boolean result = service.isSubjectExistsBySubjectName(subjectName);
+		
+		return new ResponseEntity<>(result, HttpStatus.OK);
+	}
+	
+	@GetMapping(value = "/subjectCodeAndSubjectName/{subjectCode}/{subjectName}")
+	public ResponseEntity<?> existsSubjectBySubjectCodeAndName(@PathVariable(name = "subjectCode") String subjectCode, @PathVariable(name = "subjectName") String subjectName){
+		
+		boolean result = service.isSubjectExistsBySubjectCodeAndSubjectName(subjectCode, subjectName);
+		
+		return new ResponseEntity<>(result, HttpStatus.OK);
 	}
 }

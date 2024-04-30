@@ -57,12 +57,27 @@ const deleteClassroom = (id) => {
     return Api.delete(`${url}/${id}`);
 };
 
+const checkClassRoomCodeExists = (classRoomCode) => {
+    return Api.get(`${url}/classRoomCode/${classRoomCode}`);
+};
+
+const checkClassRoomNameExists = (classRoomName) => {
+    return Api.get(`${url}/classRoomName/${classRoomName}`);
+};
+
+const CheckClassRoomNameAndCourse = (classRoomName, course) => {
+    return Api.get(`${url}/classRoomNameAndCourse/${classRoomName}/${course}`);
+};
+
 const api = {
     getAllClassrooms,
     getById,
     createClassroom,
     updateClassroom,
     deleteClassroom,
+    checkClassRoomCodeExists,
+    CheckClassRoomNameAndCourse,
+    checkClassRoomNameExists,
 };
 
 export default api;

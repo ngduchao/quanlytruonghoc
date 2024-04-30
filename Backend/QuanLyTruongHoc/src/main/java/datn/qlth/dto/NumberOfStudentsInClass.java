@@ -1,7 +1,10 @@
 package datn.qlth.dto;
 
+import java.util.Date;
 import java.util.List;
 
+import datn.qlth.entity.Enum.Gender;
+import datn.qlth.entity.Enum.UserStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -20,8 +23,22 @@ public class NumberOfStudentsInClass extends ClassRoomDTO{
 		
 		private Integer userID;
 		
-		private String username;
+		private String userCode;
 		
-		private String fullName;
+		private String firstName;
+		
+		private String lastName;
+		
+		private Date birthDay;
+		
+		private Gender gender;
+		
+		private String email;
+		
+		private String phoneNumber;
+		
+		private String homeTown;
+		
+		private UserStatus status;
 	}
 }

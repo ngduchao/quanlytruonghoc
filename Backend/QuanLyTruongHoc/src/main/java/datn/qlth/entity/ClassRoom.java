@@ -40,8 +40,8 @@ public class ClassRoom {
 	@Column(name = "`name`", length = 100, nullable = false)
 	private String classRoomName;
 	
-	@Column(name = "`quantity`")
-	private Integer quantity;
+//	@Column(name = "`quantity`")
+//	private Integer quantity;
 	
 	@Column(name = "`create_date`")
 	@Temporal(TemporalType.DATE)

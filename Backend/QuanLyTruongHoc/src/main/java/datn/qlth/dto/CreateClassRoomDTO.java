@@ -23,7 +23,7 @@ public class CreateClassRoomDTO {
 	private String classRoomCode;
 	
 	@NotBlank(message = "The classRoomName mustn't be null value")
-	@Length(max = 50, message = "The classRoomName length is max 50 characters")
+	@Length(max = 100, message = "The classRoomName length is max 100 characters")
 	@Length(min = 6, message = "The classRoomName length is min 6 characters")
 	@ClassroomNameNotExists
 	private String classRoomName;

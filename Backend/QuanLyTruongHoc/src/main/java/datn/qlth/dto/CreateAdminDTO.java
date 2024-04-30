@@ -6,6 +6,7 @@ import org.hibernate.validator.constraints.Length;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
+import datn.qlth.entity.Enum.Gender;
 import datn.qlth.entity.Enum.Role;
 import datn.qlth.entity.Enum.UserStatus;
 import datn.qlth.validation.user.EmailNotExists;
@@ -61,6 +62,9 @@ public class CreateAdminDTO {
 	
 	@NotBlank(message = "The home town mustn't be null value")
 	private String homeTown;
+	
+	@Pattern(regexp = "MALE|FEMALE", message = "The role must be MALE or FEMALE")
+	private Gender gender;
 	
 	@Pattern(regexp = "ADMIN|USER", message = "The role must be ADMIN or USER")
 	private Role role;

@@ -7,11 +7,12 @@ import {
     faPlus,
     faRefresh,
 } from "@fortawesome/free-solid-svg-icons";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import { format } from "date-fns";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
+import ReactPaginate from "react-paginate";
 
 import {
     addUserAction,
@@ -28,7 +29,6 @@ import {
     selectTotalElement,
 } from "../../../redux/selectors/userSelector";
 import userApi from "../../../services/api/userApi";
-import ReactPaginate from "react-paginate";
 
 const cx = classNames.bind(styles);
 
@@ -54,11 +54,19 @@ function Admins(props) {
         setSearch("");
         setSortField("userID");
         setSortType("asc");
+
+        const url = new URL(window.location);
+        url.searchParams.delete("search");
+        window.history.replaceState({}, "", url.toString());
     }, [refresh]);
 
     const getListAdmin = props.getListUserAction;
 
-    const url = new URL(window.location).searchParams.get("search");
+    // const url = new URL(window.location).searchParams.get("search");
+    const url = useMemo(
+        () => new URL(window.location).searchParams.get("search"),
+        []
+    );
 
     const [search, setSearch] = useState(url === undefined ? "" : url);
     const [successSearch, setSuccessSearch] = useState(false);
@@ -77,7 +85,30 @@ function Admins(props) {
 
     const role = "ADMIN";
 
-    const handleSuccessSearch = async () => {
+    // const handleSuccessSearch = async () => {
+    //     const url = new URL(window.location);
+    //     url.searchParams.set("search", search); // Thêm hoặc thay đổi giá trị của biến "search" trong URL
+    //     window.history.replaceState({}, "", url.toString()); // Cập nhật URL mà không tải lại trang
+
+    //     const admins = await userApi.getAllUsers(
+    //         page,
+    //         size,
+    //         sortField,
+    //         sortType,
+    //         role,
+    //         search
+    //     );
+    //     getListAdmin(admins.content);
+    // };
+
+    // const size = props.size;
+    const size = useMemo(() => props.size, [props.size]);
+    const [page, setPage] = useState(1);
+
+    const [sortField, setSortField] = useState("");
+    const [sortType, setSortType] = useState("");
+
+    const handleSuccessSearch = useCallback(async () => {
         const url = new URL(window.location);
         url.searchParams.set("search", search); // Thêm hoặc thay đổi giá trị của biến "search" trong URL
         window.history.replaceState({}, "", url.toString()); // Cập nhật URL mà không tải lại trang
@@ -91,15 +122,9 @@ function Admins(props) {
             search
         );
         getListAdmin(admins.content);
-    };
+    }, [getListAdmin, page, search, size, sortField, sortType]);
 
-    const size = props.size;
-    const [page, setPage] = useState(1);
-
-    const [sortField, setSortField] = useState("");
-    const [sortType, setSortType] = useState("");
-
-    const handleSetSort = (sortField, sortType) => {
+    const handleSetSort = useCallback((sortField, sortType) => {
         if (
             sortField === null ||
             sortField === undefined ||
@@ -111,7 +136,7 @@ function Admins(props) {
         }
         setSortField(sortField);
         setSortType(sortType);
-    };
+    }, []);
 
     const [totalElements, setTotalElements] = useState(0);
 
@@ -138,7 +163,7 @@ function Admins(props) {
 
         getAllAdmins();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [getListAdmin, refresh, page, search]);
+    }, [getListAdmin, page, search]);
 
     const isValidEmail = (email) => {
         const emailRegex = /^[\w.%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
@@ -159,10 +184,19 @@ function Admins(props) {
     };
 
     const isValidBirthDay = (birthDay) => {
-        if (new Date() < new Date(birthDay)) {
-            return 0;
+        let yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+
+        // Chuyển đổi cả hai ngày về đầu ngày để so sánh
+        let birthDayDate = new Date(birthDay);
+        birthDayDate.setHours(0, 0, 0, 0);
+        yesterday.setHours(0, 0, 0, 0);
+
+        // So sánh ngày sinh với ngày hôm qua
+        if (birthDayDate.getTime() > yesterday.getTime()) {
+            return 0; // Ngày sinh là ngày hôm qua
         } else {
-            return 1;
+            return 1; // Ngày sinh không phải là ngày hôm qua
         }
     };
 
@@ -193,14 +227,25 @@ function Admins(props) {
         phoneNumber: "",
         birthDay: "",
         homeTown: "",
+        gender: "",
         role: role,
     });
+
+    const handleChangeSelected = (e) => {
+        setAddForm({
+            ...addForm,
+            gender: e.target.value, // Gán giá trị của thẻ option vào addForm
+        });
+    };
 
     const handleAddChange = (e) => {
         setAddForm({
             ...addForm,
             [e.target.name]: e.target.value,
         });
+        if (e.target.name === "gender") {
+            handleChangeSelected(e); // Cập nhật giá trị từ option
+        }
     };
 
     const handleShowAddModel = () => {
@@ -267,6 +312,7 @@ function Admins(props) {
                 phoneNumber: "",
                 birthDay: "",
                 homeTown: "",
+                gender: "",
                 role: role,
             });
 
@@ -294,6 +340,7 @@ function Admins(props) {
             phoneNumber: "",
             birthDay: "",
             homeTown: "",
+            gender: "",
             role: role,
             status: "STUDYING",
         });
@@ -307,6 +354,7 @@ function Admins(props) {
         phoneNumber: "",
         birthDay: "",
         homeTown: "",
+        gender: "",
         userID: "",
     });
 
@@ -317,8 +365,26 @@ function Admins(props) {
         phoneNumber: "",
         birthDay: "",
         homeTown: "",
+        gender: "",
         userID: "",
     });
+
+    const handleChangeSelectedUpdate = (e) => {
+        setUpdateForm({
+            ...updateForm,
+            gender: e.target.value, // Gán giá trị của thẻ option vào addForm
+        });
+    };
+
+    const handleChange = (e) => {
+        setUpdateForm({
+            ...updateForm,
+            [e.target.name]: e.target.value,
+        });
+        if (e.target.name === "gender") {
+            handleChangeSelected(e); // Cập nhật giá trị từ option
+        }
+    };
 
     const handleShowUpdateModel = (
         firstName,
@@ -327,6 +393,7 @@ function Admins(props) {
         phoneNumber,
         birthDay,
         homeTown,
+        gender,
         userID
     ) => {
         setUpdateForm({
@@ -336,6 +403,7 @@ function Admins(props) {
             phoneNumber,
             birthDay,
             homeTown,
+            gender,
             userID,
         });
 
@@ -346,20 +414,15 @@ function Admins(props) {
             phoneNumber,
             birthDay,
             homeTown,
+            gender,
             userID,
         });
         setShowUpdateForm(!showUpdateForm);
     };
 
-    const handleChange = (e) => {
-        setUpdateForm({
-            ...updateForm,
-            [e.target.name]: e.target.value,
-        });
-    };
-
     const handleSubmitUpdate = async (e) => {
         e.preventDefault();
+        console.log(updateForm);
         try {
             const email = await userApi.checkEmailExist(
                 updateForm.email.trim()
@@ -375,23 +438,24 @@ function Admins(props) {
                     // Kiểm tra tính hợp lệ của email
                     setEmailError("Email không hợp lệ!");
                 }
-                if (email) {
+                if (email && checkUpdateForm.email !== updateForm.email) {
                     setEmailError("Email đã tồn tại!");
                 }
-
-                if (checkUpdateForm.phoneNumber !== updateForm.phoneNumber) {
-                    if (!isValidPhoneNumber(updateForm.phoneNumber.trim())) {
-                        // Kiểm tra tính hợp lệ của sdt
-                        setPhoneNumberError("Số điện thoại không hợp lệ!");
-                    }
-                    if (phoneNumber) {
-                        setPhoneNumberError("Số điện thoại đã tồn tại!");
-                    }
+                if (!isValidPhoneNumber(updateForm.phoneNumber.trim())) {
+                    // Kiểm tra tính hợp lệ của sdt
+                    setPhoneNumberError("Số điện thoại không hợp lệ!");
                 }
-
-                if (isValidBirthDay(checkUpdateForm.birthDay) === 0) {
-                    setBirthDayError("Ngày sinh không hợp lệ!");
+                if (
+                    phoneNumber &&
+                    checkUpdateForm.phoneNumber !== updateForm.phoneNumber
+                ) {
+                    setPhoneNumberError("Số điện thoại đã tồn tại!");
                 }
+                return;
+            }
+
+            if (isValidBirthDay(updateForm.birthDay) === 0) {
+                setBirthDayError("Ngày sinh không hợp lệ!");
                 return;
             }
 
@@ -405,6 +469,7 @@ function Admins(props) {
                 phoneNumber: "",
                 birthDay: "",
                 homeTown: "",
+                gender: "",
                 userID: "",
             });
             setShowUpdateForm(!showUpdateForm);
@@ -414,7 +479,7 @@ function Admins(props) {
         } catch (error) {
             console.error("Error updating data: ", error);
             if (error.status === 500) {
-                notify("Cập nhật mới bại!");
+                notify("Cập nhật thất bại!");
             }
         }
     };
@@ -428,6 +493,7 @@ function Admins(props) {
             phoneNumber: "",
             birthDay: "",
             homeTown: "",
+            gender: "",
             userID: "",
         });
         handleFocus();
@@ -543,6 +609,7 @@ function Admins(props) {
                                     <th>Email</th>
                                     <th>Số Điện Thoại</th>
                                     <th>Ngày Sinh</th>
+                                    <th>Giới tính</th>
                                     <th>Quê Quán</th>
                                     <th className={cx("action-row")}>
                                         Thao tác
@@ -561,6 +628,11 @@ function Admins(props) {
                                             <td>{item.email}</td>
                                             <td>{item.phoneNumber}</td>
                                             <td>{formatDate(item.birthDay)}</td>
+                                            <td>
+                                                {item.gender === "MALE"
+                                                    ? "Nam"
+                                                    : "Nữ"}
+                                            </td>
                                             <td>{item.homeTown}</td>
 
                                             <td>
@@ -574,6 +646,7 @@ function Admins(props) {
                                                             item.phoneNumber,
                                                             item.birthDay,
                                                             item.homeTown,
+                                                            item.gender,
                                                             item.userID
                                                         )
                                                     }
@@ -687,6 +760,9 @@ function Admins(props) {
                             onFocus={handleFocus}
                             required
                         />
+
+                        <label className={cx("user-Error")}></label>
+
                         <label className={cx("label")}>Tên</label>
                         <input
                             type="text"
@@ -698,6 +774,9 @@ function Admins(props) {
                             onFocus={handleFocus}
                             required
                         />
+
+                        <label className={cx("user-Error")}></label>
+
                         <label className={cx("label")}>Email</label>
                         <input
                             type="text"
@@ -755,6 +834,22 @@ function Admins(props) {
                             onFocus={handleFocus}
                             required
                         />
+
+                        <label className={cx("user-Error")}> </label>
+
+                        <label className={cx("label")}>Giới tính</label>
+                        <select
+                            className={cx("selection")}
+                            name="gender"
+                            value={addForm.gender || ""}
+                            onChange={handleChangeSelected}
+                            onFocus={handleFocus}
+                            required
+                        >
+                            <option value={""}>Chọn Giới Tính</option>
+                            <option value={"MALE"}>Nam</option>
+                            <option value={"FEMALE"}>Nữ</option>
+                        </select>
                         <div className={cx("btn")}>
                             <button className={cx("btn-add")}>Thêm</button>
                             <button
@@ -785,6 +880,8 @@ function Admins(props) {
                             onFocus={handleFocus}
                         />
 
+                        <label className={cx("user-Error")}></label>
+
                         <label htmlFor="lastName" className={cx("label")}>
                             Tên
                         </label>
@@ -797,6 +894,8 @@ function Admins(props) {
                             onChange={handleChange}
                             onFocus={handleFocus}
                         />
+
+                        <label className={cx("user-Error")}></label>
 
                         <label htmlFor="email" className={cx("label")}>
                             Email
@@ -857,6 +956,22 @@ function Admins(props) {
                             onChange={handleChange}
                             onFocus={handleFocus}
                         />
+
+                        <label className={cx("user-Error")}></label>
+
+                        <label className={cx("label")}>Giới tính</label>
+                        <select
+                            className={cx("selection")}
+                            name="gender"
+                            value={updateForm.gender || ""}
+                            onChange={handleChangeSelectedUpdate}
+                            onFocus={handleFocus}
+                            required
+                        >
+                            <option value={""}>Chọn Giới Tính</option>
+                            <option value={"MALE"}>Nam</option>
+                            <option value={"FEMALE"}>Nữ</option>
+                        </select>
 
                         <div className={cx("btn")}>
                             <button type="submit" className={cx("btn-add")}>

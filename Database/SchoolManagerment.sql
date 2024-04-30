@@ -29,6 +29,7 @@ CREATE TABLE IF NOT EXISTS `Teacher`(
     `phone_number`			VARCHAR(15) UNIQUE NOT NULL,
     `birth_day`				DATETIME NOT NULL,
     `home_town`				VARCHAR(100) NOT NULL,
+    `gender`				ENUM('MALE', 'FEMALE'),
     `specialize_level`		ENUM('TIENSI', 'THACSI', 'DAIHOC') -- trình độ
 );
 
@@ -36,7 +37,7 @@ DROP TABLE IF EXISTS `Subject`; -- Môn học
 CREATE TABLE IF NOT EXISTS `Subject` (
 	`id`					INT AUTO_INCREMENT PRIMARY KEY,
 	`subject_code` 			VARCHAR(30) UNIQUE NOT NULL,
-    `subject_name`			VARCHAR(100) UNIQUE NOT NULL,
+    `subject_name`			VARCHAR(100) NOT NULL,
     `number_of_credit`		INT,
     `actual_quantity`		INT,
     `max_quantity`			INT,
@@ -50,7 +51,7 @@ DROP TABLE IF EXISTS `Class_room`; -- Lớp học
 CREATE TABLE IF NOT EXISTS `Class_room`(
 	`id`					INT AUTO_INCREMENT PRIMARY KEY,
 	`code` 					VARCHAR(30) UNIQUE NOT NULL, -- Mã lớp
-    `name` 					VARCHAR(50) NOT NULL,
+    `name` 					VARCHAR(100) NOT NULL,
     `quantity`				INT CHECK(`quantity` >= 0),
     `create_date`			DATETIME DEFAULT NOW(),
     `course`				INT,
@@ -72,6 +73,7 @@ CREATE TABLE IF NOT EXISTS `User` (
     `phone_number`			VARCHAR(15) UNIQUE NOT NULL,
     `birth_day`				DATETIME NOT NULL,
     `home_town`				VARCHAR(100) NOT NULL,
+    `gender`				ENUM('MALE', 'FEMALE'),
     `role` 					ENUM('ADMIN', 'USER'),
     `status`				BOOLEAN DEFAULT 0, -- 0: Not Active, 1: Active
     `class_id`				INT,
@@ -88,8 +90,8 @@ CREATE TABLE IF NOT EXISTS `Registration_subject`(
    `midterm_score`			FLOAT DEFAULT 0,
    `final_score`			FLOAT DEFAULT 0,
    `created_date`			DATETIME DEFAULT NOW(),
-    FOREIGN KEY(`subject_id`) REFERENCES `Subject`(`id`) ON DELETE SET NULL ON UPDATE SET NULL,
-    FOREIGN KEY(`user_id`) REFERENCES `User`(`user_id`) ON DELETE SET NULL ON UPDATE SET NULL
+    FOREIGN KEY(`subject_id`) REFERENCES `Subject`(`id`) ON DELETE CASCADE,
+    FOREIGN KEY(`user_id`) REFERENCES `User`(`user_id`) ON DELETE CASCADE
 );
 
 DROP TABLE IF EXISTS `Parent`; -- Phụ huynh

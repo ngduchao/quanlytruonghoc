@@ -33,5 +33,7 @@ public class SubjectDTO {
 		private String teacherCode;
 		
 		private String teacherName;
+		
+		private String phoneNumber;
 	}
 }

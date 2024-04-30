@@ -17,6 +17,10 @@ const routes = {
     contactUs: "/contact-us",
     servicePage: "/service",
     documentPage: "/documents",
+    adminDetailClassRoom: "/detail-classroom/:classRoomID",
+    adminDetailSubject: "/detail-subject/:subjectID",
+    studyResult: "/student/study-results",
+    registrationSubject: "/student/registration-subject",
 };
 
 export default routes;

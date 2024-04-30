@@ -4,12 +4,15 @@ import java.util.List;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import datn.qlth.dto.CreateRegistrationSubjectDTO;
 import datn.qlth.dto.DeleteRegistrationSubjectDTO;
 import datn.qlth.dto.RegistrationSubjectForStudentDTO;
 import datn.qlth.dto.ScoreFormDTO;
 import datn.qlth.dto.UpdateRegistrationSubjectDTO;
+import datn.qlth.dto.filter.RegistrationSubjectFilterForm;
 import datn.qlth.entity.RegistrationSubject;
 import datn.qlth.entity.Subject;
 import datn.qlth.entity.User;
@@ -17,6 +20,7 @@ import datn.qlth.repository.RegistrationSubjectRepository;
 import datn.qlth.repository.SubjectRepository;
 import datn.qlth.repository.UserRepository;
 import datn.qlth.service.RegistrationSubjectService;
+import datn.qlth.specification.registrationSubject.RegistrationSubjectSpecification;
 
 @Service
 public class RegistrationSubjectImpl implements RegistrationSubjectService{
@@ -34,9 +38,11 @@ public class RegistrationSubjectImpl implements RegistrationSubjectService{
 	private SubjectRepository subjectRepository;
 
 	@Override
-	public List<RegistrationSubject> getAllRegistrationSubjects() {
+	public List<RegistrationSubject> getAllRegistrationSubjects(RegistrationSubjectFilterForm filter) {
 		
-		return repository.findAll();
+		Specification<RegistrationSubject> where = RegistrationSubjectSpecification.buildWhere(filter);
+		
+		return repository.findAll(where);
 	}
 
 	@Override
@@ -53,7 +59,9 @@ public class RegistrationSubjectImpl implements RegistrationSubjectService{
 		
 		User user = userRepository.findByUserCode(form.getUserCode());
 		
-		Subject subject = subjectRepository.findBySubjectCode(form.getSubjectCode());
+		Subject subject = subjectRepository.findById(form.getSubjectID()).get();
+		
+		subject.setActualQuantity(subject.getActualQuantity() + 1);
 		
 		registrationSubject.setUser(user);
 		registrationSubject.setSubject(subject);
@@ -66,9 +74,19 @@ public class RegistrationSubjectImpl implements RegistrationSubjectService{
 	}
 
 	@Override
-	public void deleteRegistrationSubject(Integer ID) {
+	public RegistrationSubject deleteRegistrationSubject(Integer ID) {
+		
+		RegistrationSubject registrationSubject = repository.findById(ID).get();
+	
+		if(registrationSubject.getSubject() != null) {
+			Subject subject = subjectRepository.findById(registrationSubject.getSubject().getSubjectID()).get();
+			subject.setActualQuantity(subject.getActualQuantity() - 1);
+		}
 		
 		repository.deleteById(ID);
+		
+		return registrationSubject;
+	
 	}
 
 	@Override
@@ -100,7 +118,7 @@ public class RegistrationSubjectImpl implements RegistrationSubjectService{
 	}
 
 	@Override
-	public void updateScoreForRegistrationSubject(Integer ID, ScoreFormDTO form) {
+	public RegistrationSubject updateScoreForRegistrationSubject(Integer ID, ScoreFormDTO form) {
 		
 		RegistrationSubject registrationSubject = repository.findById(ID).get();
 		
@@ -122,11 +140,63 @@ public class RegistrationSubjectImpl implements RegistrationSubjectService{
 		registrationSubject.setMidtermScore(form.getMidtermScore());
 		registrationSubject.setFinalScore(form.getFinalScore());
 		
-		repository.save(registrationSubject);
+		return repository.save(registrationSubject);
 	}
 
 	@Override
 	public boolean isExistsRegistrationSubjectByID(Integer ID) {
 		return repository.existsById(ID);
+	}
+
+	@Override
+	public RegistrationSubject createRegistrationSubject(CreateRegistrationSubjectDTO form) {
+		
+		float diem = 0;
+		
+		RegistrationSubject registrationSubject = modelMapper.map(form, RegistrationSubject.class);
+		
+		User user = userRepository.findByUserCode(form.getUserCode());
+		
+		Subject subject = subjectRepository.findById(form.getSubjectID()).get();
+		
+		subject.setActualQuantity(subject.getActualQuantity() + 1);
+		
+		registrationSubject.setUser(user);
+		registrationSubject.setSubject(subject);
+		registrationSubject.setFinalScore(diem);
+		registrationSubject.setMidtermScore(diem);
+		registrationSubject.setRegularPoint1(diem);
+		registrationSubject.setRegularPoint2(diem);
+		
+		return repository.save(registrationSubject);
+		
+	}
+
+	@Override
+	public List<RegistrationSubject> getRegistrationSubjectsBySubject(Integer subjectID) {
+		
+		Subject subject = subjectRepository.findById(subjectID).get();
+		
+		List<RegistrationSubject> list = repository.findBySubject(subject);
+		
+		return list;
+	}
+
+	@Override
+	public boolean isExistsRegistrationSubjectByUser(String userCode, Integer subjectID) {
+		
+		User user = userRepository.findByUserCode(userCode);
+		
+		Subject subject = subjectRepository.findById(subjectID).get();
+
+		return repository.existsByUserAndSubject(user, subject);
+	}
+
+	@Override
+	public List<RegistrationSubject> getRegistrationSubjectByUser(String username) {
+		
+		User user = userRepository.findByUsername(username).get();
+		
+		return repository.findByUser(user);
 	}
 }

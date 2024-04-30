@@ -1,5 +1,7 @@
 package datn.qlth.service;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -12,6 +14,8 @@ import datn.qlth.entity.Subject;
 public interface SubjectService {
 	
 	public Page<Subject> getAllSubjects(Pageable pageable, String search, SubjectFilterForm filter);
+	
+	public List<Subject> getListSubjects();
 	
 	public Subject getSubjectByID(Integer ID);
 	
@@ -32,4 +36,6 @@ public interface SubjectService {
 	public boolean isSubjectExistsBySubjectCode(String subjectCode);
 	
 	public boolean isSubjectExistsBySubjectName(String subjectName);
+	
+	public boolean isSubjectExistsBySubjectCodeAndSubjectName(String subjectCode, String subjectName);
 }

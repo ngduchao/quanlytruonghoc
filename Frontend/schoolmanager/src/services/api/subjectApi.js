@@ -25,6 +25,10 @@ const getAllSubjects = (
     return Api.get(`${url}`, { params: parameters });
 };
 
+const getListSubjects = () => {
+    return Api.get(`${url}/get-list-subject`);
+};
+
 const getById = (id) => {
     return Api.get(`${url}/${id}`);
 };
@@ -55,12 +59,30 @@ const deleteSubject = (id) => {
     return Api.delete(`${url}/${id}`);
 };
 
+const checkSubjectCodeExist = (subjectCode) => {
+    return Api.get(`${url}/subjectCode/${subjectCode}`);
+};
+
+const checkSubjectNameExist = (subjectName) => {
+    return Api.get(`${url}/subjectName/${subjectName}`);
+};
+
+const checkSubjectCodeAndSubjectNameExist = (subjectCode, subjectName) => {
+    return Api.get(
+        `${url}/subjectCodeAndSubjectName/${subjectCode}/${subjectName}`
+    );
+};
+
 const api = {
     getAllSubjects,
+    getListSubjects,
     getById,
     createSubject,
     updateSubject,
     deleteSubject,
+    checkSubjectCodeExist,
+    checkSubjectNameExist,
+    checkSubjectCodeAndSubjectNameExist,
 };
 
 export default api;

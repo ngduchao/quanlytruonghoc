@@ -47,6 +47,11 @@ public class UserSpecification {
 	        CustomSpecification classRoomName = new CustomSpecification("classRoomName", filter.getClassRoomName());
 	        where = where.and(classRoomName);
 	    }
+		
+		if (!StringUtils.isEmpty(filter.getClassRoomID())) {
+	        CustomSpecification classRoomID = new CustomSpecification("classRoomID", filter.getClassRoomID());
+	        where = where.and(classRoomID);
+	    }
 		return where;
 	}
 }
@@ -87,8 +92,13 @@ class CustomSpecification implements Specification<User>{
 		}
 		
 		if (field.equalsIgnoreCase("classRoomName")) {
-	        Join<User, ClassRoom> facultyJoin = root.join("classRoom");
-	        return criteriaBuilder.equal(facultyJoin.get("classRoomName"), value.toString());
+	        Join<User, ClassRoom> classRoomJoin = root.join("classRoom");
+	        return criteriaBuilder.equal(classRoomJoin.get("classRoomName"), value.toString());
+	    }
+		
+		if (field.equalsIgnoreCase("classRoomID")) {
+	        Join<User, ClassRoom> classRoomJoin = root.join("classRoom");
+	        return criteriaBuilder.equal(classRoomJoin.get("classRoomID"), value.toString());
 	    }
 		
 		return null;

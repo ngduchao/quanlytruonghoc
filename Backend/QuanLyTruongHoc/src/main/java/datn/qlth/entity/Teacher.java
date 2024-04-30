@@ -6,6 +6,7 @@ import java.util.List;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
+import datn.qlth.entity.Enum.Gender;
 import datn.qlth.entity.Enum.SpecializeLevel;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -49,6 +50,10 @@ public class Teacher {
 	
 	@Column(name = "`home_town`", length = 100, nullable = false)
 	private String homeTown;
+	
+	@Column(name = "`gender`")
+	@Enumerated(value = EnumType.STRING)
+	private Gender gender;
 	
 	@Column(name = "`specialize_level`")
     @Enumerated(value = EnumType.STRING)
