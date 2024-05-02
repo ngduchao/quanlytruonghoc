@@ -16,6 +16,7 @@ import datn.qlth.dto.filter.SubjectFilterForm;
 import datn.qlth.entity.Major;
 import datn.qlth.entity.Subject;
 import datn.qlth.entity.Teacher;
+import datn.qlth.entity.Enum.SubjectStatus;
 import datn.qlth.repository.MajorRepository;
 import datn.qlth.repository.SubjectRepository;
 import datn.qlth.repository.TeacherRepository;
@@ -66,11 +67,14 @@ public class SubjectServiceImpl implements SubjectService{
 		
 		Teacher teacher = teacherRepository.findById(form.getTeacherID()).get();
 		
+		Major major = majorRepository.findById(form.getMajorID()).get();
+		
 		Subject subject = modelMapper.map(form, Subject.class);
 		
 		subject.setActualQuantity(0);
 		subject.setMaxQuantity(70);
 		subject.setTeacher(teacher);
+		subject.setMajor(major);
 		
 		return repository.save(subject);
 	}
@@ -81,6 +85,8 @@ public class SubjectServiceImpl implements SubjectService{
 		Subject subject = repository.findById(ID).get();
 		
 		Teacher teacher = teacherRepository.findById(form.getTeacherID()).get();
+		
+		Major major = majorRepository.findById(form.getMajorID()).get();
 		
 		if(form.getSubjectCode() == null || form.getSubjectCode().isEmpty()) {
 			form.setSubjectCode(subject.getSubjectCode());
@@ -105,9 +111,18 @@ public class SubjectServiceImpl implements SubjectService{
 			}
 		}
 		
+		if(subject.getMajor() != null) {
+			if(subject.getMajor().getMajorID() != form.getMajorID()) {
+				subject.setMajor(major);
+			}else {
+				subject.setMajor(major);
+			}
+		}
+		
 		subject.setSubjectCode(form.getSubjectCode());
 		subject.setSubjectName(form.getSubjectName());
 		subject.setNumberOfCredit(form.getNumberOfCredit());
+		subject.setSubjectStatus(form.getSubjectStatus());
 		
 		return repository.save(subject);
 	}
@@ -160,6 +175,14 @@ public class SubjectServiceImpl implements SubjectService{
 	@Override
 	public boolean isSubjectExistsBySubjectCodeAndSubjectName(String subjectCode, String subjectName) {
 		return repository.existsBySubjectCodeAndSubjectName(subjectCode, subjectName);
+	}
+
+	@Override
+	public List<Subject> getListSubjectBySubjectStatus(SubjectStatus subjectStatus, Integer majorID) {
+		
+		Major major = majorRepository.findById(majorID).get();
+		
+		return repository.findBySubjectStatusAndMajor(subjectStatus, major);
 	}
 
 	

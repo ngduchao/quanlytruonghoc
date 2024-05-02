@@ -43,6 +43,7 @@ CREATE TABLE IF NOT EXISTS `Subject` (
     `max_quantity`			INT,
     `major_id`				INT,
     `teacher_id`			INT, -- giảng viên dạy
+    `status`				ENUM('OPEN', 'CLOSE'),
     FOREIGN KEY(`major_id`) REFERENCES `Major`(`id`) ON DELETE SET NULL ON UPDATE SET NULL,
     FOREIGN KEY(`teacher_id`) REFERENCES `Teacher`(`id`) ON DELETE SET NULL ON UPDATE SET NULL
 );

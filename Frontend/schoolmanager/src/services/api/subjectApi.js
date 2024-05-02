@@ -8,7 +8,8 @@ const getAllSubjects = (
     sortField = "",
     sortType = "",
     search = "",
-    teacherName = ""
+    teacherName = "",
+    subjectStatus = ""
 ) => {
     const parameters = {
         page,
@@ -16,6 +17,7 @@ const getAllSubjects = (
         sort: `${sortField},${sortType}`,
         search,
         teacherName,
+        subjectStatus,
     };
 
     if (search) {
@@ -29,6 +31,16 @@ const getListSubjects = () => {
     return Api.get(`${url}/get-list-subject`);
 };
 
+const getListSubjectsBySubjectStatus = (majorID, subjectStatus) => {
+    const parameters = {
+        majorID,
+        subjectStatus,
+    };
+    return Api.get(`${url}/get-list-subject-by-subjectStatus/${majorID}`, {
+        params: parameters,
+    });
+};
+
 const getById = (id) => {
     return Api.get(`${url}/${id}`);
 };
@@ -38,7 +50,9 @@ const createSubject = (values) => {
         subjectCode: values.subjectCode,
         subjectName: values.subjectName,
         numberOfCredit: values.numberOfCredit,
+        subjectStatus: values.subjectStatus,
         teacherID: values.teacherID,
+        majorID: values.majorID,
     };
 
     return Api.post(`${url}/create-subject`, body);
@@ -49,7 +63,9 @@ const updateSubject = (values) => {
         subjectCode: values.subjectCode,
         subjectName: values.subjectName,
         numberOfCredit: values.numberOfCredit,
+        subjectStatus: values.subjectStatus,
         teacherID: values.teacherID,
+        majorID: values.majorID,
         subjectID: values.subjectID,
     };
     return Api.put(`${url}/update-subject/${values.subjectID}`, body);
@@ -83,6 +99,7 @@ const api = {
     checkSubjectCodeExist,
     checkSubjectNameExist,
     checkSubjectCodeAndSubjectNameExist,
+    getListSubjectsBySubjectStatus,
 };
 
 export default api;

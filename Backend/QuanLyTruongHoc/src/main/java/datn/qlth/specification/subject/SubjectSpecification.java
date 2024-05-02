@@ -38,6 +38,11 @@ public class SubjectSpecification {
 			return where;
 		}
 		
+		if(filter.getSubjectStatus() != null) {
+			CustomSpecification subjectStatus = new CustomSpecification("subjectStatus", filter.getSubjectStatus());
+			where = where.and(subjectStatus);
+		}
+		
 		if(filter.getSubjectCode() != null) {
 			CustomSpecification subjectCode = new CustomSpecification("subjectCode", filter.getSubjectCode());
 			where = where.and(subjectCode);
@@ -79,6 +84,10 @@ class CustomSpecification implements Specification<Subject>{
 		}
 		if (field.equalsIgnoreCase("subjectCode")) {
 			return criteriaBuilder.like(root.get("subjectCode"), "%" + value.toString() + "%");
+		}
+		
+		if (field.equalsIgnoreCase("subjectStatus")) {
+			return criteriaBuilder.equal(root.get("subjectStatus"), value);
 		}
 		
 //		if (field.equalsIgnoreCase("teacherName")) {

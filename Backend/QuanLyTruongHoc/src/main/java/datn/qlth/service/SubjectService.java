@@ -10,12 +10,15 @@ import datn.qlth.dto.CreateSubjectDTO;
 import datn.qlth.dto.UpdateSubjectDTO;
 import datn.qlth.dto.filter.SubjectFilterForm;
 import datn.qlth.entity.Subject;
+import datn.qlth.entity.Enum.SubjectStatus;
 
 public interface SubjectService {
 	
 	public Page<Subject> getAllSubjects(Pageable pageable, String search, SubjectFilterForm filter);
 	
 	public List<Subject> getListSubjects();
+	
+	public List<Subject> getListSubjectBySubjectStatus(SubjectStatus subjectStatus, Integer majorID);
 	
 	public Subject getSubjectByID(Integer ID);
 	

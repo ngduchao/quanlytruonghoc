@@ -703,7 +703,7 @@ function ClassRoom(props) {
                                             <td>{item.classRoomCode}</td>
                                             <td>
                                                 <Link
-                                                    to={`/detail-classroom/${item.classRoomID}`}
+                                                    to={`/chi-tiet-lop-hoc/${item.classRoomID}`}
                                                 >
                                                     {item.classRoomName}
                                                 </Link>

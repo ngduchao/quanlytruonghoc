@@ -20,10 +20,10 @@ import {
     RegistrationSubject,
 } from "../pages/Manager";
 import ChangePassword from "../pages/Auth/ChangePassword/changePassword";
-import Introduce from "../pages/Introduce/Introduce";
 import ContactUs from "../pages/ContactUs/ContactUs";
 import Service from "../pages/Service/Service";
 import Document from "../pages/Document/Document";
+import Support from "../pages/Support/Support";
 
 //Layouts
 import { DefaultLayout, ManagerLayout } from "../layouts";
@@ -33,8 +33,8 @@ import withAuth from "../hooks/withAuth";
 export const publicRoutes = [
     { path: config.routes.home, component: Home, layout: DefaultLayout },
     {
-        path: config.routes.introduce,
-        component: Introduce,
+        path: config.routes.support,
+        component: Support,
         layout: DefaultLayout,
     },
     {

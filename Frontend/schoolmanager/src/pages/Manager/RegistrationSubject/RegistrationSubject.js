@@ -33,23 +33,31 @@ function RegistrationSubject(props) {
 
     const username = Storage.getUserInfo().username;
 
-    const getListSubjects = props.getListSubjectNotPageAction;
+    const [majorID, setMajorID] = useState(null);
+
     useEffect(() => {
-        const getListSubject = async () => {
-            const result = await subjectApi.getListSubjects();
-            getListSubjects(result);
-        };
-
-        const getUserInfo = async () => {
+        const getMajor = async () => {
             const result = await userApi.getUserByUsername(username);
+            // console.log(result);
             setUserInfo(result);
+            setMajorID(result.classroom.major.majorID);
         };
-        getUserInfo();
-        getListSubject();
-        // getAllInfo();
-    }, [getListSubjects, username, reRender]);
+        getMajor();
+    }, [username]);
 
-    // console.log(props);
+    useEffect(() => {
+        if (majorID !== null) {
+            const getListSubjects = async () => {
+                const result = await subjectApi.getListSubjectsBySubjectStatus(
+                    majorID,
+                    "OPEN"
+                );
+                props.getListSubjectNotPageAction(result);
+            };
+
+            getListSubjects();
+        }
+    }, [username, reRender, majorID, props]);
 
     const [registerForm, setRegisterForm] = useState({
         userCode: "",
@@ -67,7 +75,6 @@ function RegistrationSubject(props) {
         toggle();
     };
 
-    // const navigate = useNavigate();
     const handleRegisterSubmit = async (e) => {
         e.preventDefault();
 
@@ -79,7 +86,6 @@ function RegistrationSubject(props) {
             notify("Đăng ký thành công!");
             setRegisterForm({ userCode: "", subjectID: "" });
             toggle();
-            // navigate("/student/study-results");
         } catch (error) {
             console.error("Error creating data: ", error);
 
@@ -91,8 +97,6 @@ function RegistrationSubject(props) {
             }
         }
     };
-
-    // console.log(userInfo);
 
     return (
         <div className={cx("wrapper")}>

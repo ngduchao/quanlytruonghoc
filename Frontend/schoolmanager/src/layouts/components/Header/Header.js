@@ -87,12 +87,7 @@ function Header() {
                     >
                         TRANG CHỦ
                     </NavLink>
-                    <NavLink
-                        className={(nav) => cx("btn", { active: nav.isActive })}
-                        to={config.routes.introduce}
-                    >
-                        GIỚI THIỆU
-                    </NavLink>
+
                     <NavLink
                         className={(nav) => cx("btn", { active: nav.isActive })}
                         to={config.routes.contactUs}
@@ -111,7 +106,15 @@ function Header() {
                     >
                         TÀI LIỆU
                     </NavLink>
-                    {role === "ADMIN" ? (
+                    <NavLink
+                        className={(nav) => cx("btn", { active: nav.isActive })}
+                        to={config.routes.support}
+                    >
+                        HỖ TRỢ
+                    </NavLink>
+                    {role === undefined ? (
+                        <div></div>
+                    ) : role === "ADMIN" ? (
                         <NavLink
                             className={cx("btn")}
                             to={config.routes.managerFaculty}

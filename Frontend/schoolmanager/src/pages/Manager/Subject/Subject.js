@@ -32,6 +32,7 @@ import {
 } from "../../../redux/selectors/subjectSelector";
 import subjectApi from "../../../services/api/subjectApi";
 import teacherApi from "../../../services/api/teacherApi";
+import majorApi from "../../../services/api/majorApi";
 
 const cx = classNames.bind(styles);
 
@@ -188,13 +189,29 @@ function Subject(props) {
         subjectCode: "",
         subjectName: "",
         numberOfCredit: "",
+        subjectStatus: "",
         teacherID: "",
+        majorID: "",
     });
 
     const handleChangeSelected = (e) => {
         setAddForm({
             ...addForm,
             teacherID: e.target.value, // Gán giá trị của thẻ option vào addForm
+        });
+    };
+
+    const handleChangeSelectedMajor = (e) => {
+        setAddForm({
+            ...addForm,
+            majorID: e.target.value, // Gán giá trị của thẻ option vào addForm
+        });
+    };
+
+    const handleChangeSelectedSubjectStatus = (e) => {
+        setAddForm({
+            ...addForm,
+            subjectStatus: e.target.value, // Gán giá trị của thẻ option vào addForm
         });
     };
 
@@ -205,6 +222,12 @@ function Subject(props) {
         });
         if (e.target.name === "teacherID") {
             handleChangeSelected(e); // Cập nhật giá trị từ option
+        }
+        if (e.target.name === "majorID") {
+            handleChangeSelectedMajor(e); // Cập nhật giá trị từ option
+        }
+        if (e.target.name === "subjectStatus") {
+            handleChangeSelectedSubjectStatus(e); // Cập nhật giá trị từ option
         }
     };
 
@@ -233,7 +256,7 @@ function Subject(props) {
                 isValid = false;
             } else if (!subjectCode && subjectName) {
                 isValid = true;
-            } else {
+            } else if (subjectCode) {
                 setSubjectCodeError("Mã môn đã tồn tại!");
                 isValid = false;
             }
@@ -253,7 +276,9 @@ function Subject(props) {
                     subjectCode: "",
                     subjectName: "",
                     numberOfCredit: "",
+                    subjectStatus: "",
                     teacherID: "",
+                    majorID: "",
                 });
                 setShowAddForm(!showAddForm);
                 notify("Thêm mới thành công");
@@ -275,7 +300,9 @@ function Subject(props) {
             subjectCode: "",
             subjectName: "",
             numberOfCredit: "",
+            subjectStatus: "",
             teacherID: "",
+            majorID: "",
         });
         handleFocus();
     };
@@ -284,7 +311,9 @@ function Subject(props) {
         subjectCode: "",
         subjectName: "",
         numberOfCredit: "",
+        subjectStatus: "",
         teacherID: "",
+        majorID: "",
         subjectID: "",
     });
 
@@ -292,7 +321,9 @@ function Subject(props) {
         subjectCode: "",
         subjectName: "",
         numberOfCredit: "",
+        subjectStatus: "",
         teacherID: "",
+        majorID: "",
         subjectID: "",
     });
 
@@ -300,6 +331,20 @@ function Subject(props) {
         setUpdateForm({
             ...updateForm,
             teacherID: e.target.value, // Gán giá trị của thẻ option vào updateForm
+        });
+    };
+
+    const handleChangeSelectedMajorUpdate = (e) => {
+        setUpdateForm({
+            ...updateForm,
+            majorID: e.target.value, // Gán giá trị của thẻ option vào updateForm
+        });
+    };
+
+    const handleChangeSelectedUpdateSubjectStatus = (e) => {
+        setUpdateForm({
+            ...updateForm,
+            subjectStatus: e.target.value, // Gán giá trị của thẻ option vào updateForm
         });
     };
 
@@ -311,27 +356,39 @@ function Subject(props) {
         if (e.target.name === "teacherID") {
             handleChangeSelectedUpdate(e); // Cập nhật giá trị từ option
         }
+        if (e.target.name === "majorID") {
+            handleChangeSelectedMajorUpdate(e); // Cập nhật giá trị từ option
+        }
+        if (e.target.name === "subjectStatus") {
+            handleChangeSelectedUpdateSubjectStatus(e); // Cập nhật giá trị từ option
+        }
     };
 
     const handleShowUpdateModel = (
         subjectCode,
         subjectName,
         numberOfCredit,
+        subjectStatus,
         teacherID,
+        majorID,
         subjectID
     ) => {
         setUpdateForm({
             subjectCode,
             subjectName,
             numberOfCredit,
+            subjectStatus,
             teacherID,
+            majorID,
             subjectID,
         });
         setCheckUpdateForm({
             subjectCode,
             subjectName,
             numberOfCredit,
+            subjectStatus,
             teacherID,
+            majorID,
             subjectID,
         });
         setShowUpdateForm(!showUpdateForm);
@@ -391,10 +448,6 @@ function Subject(props) {
                 }
             }
 
-            // const subjectName = await subjectApi.checkSubjectNameExist(
-            //     updateForm.subjectName.trim()
-            // );
-
             if (isValid) {
                 const data = await subjectApi.updateSubject(updateForm);
                 props.updateSubjectAction(data);
@@ -403,7 +456,9 @@ function Subject(props) {
                     subjectCode: "",
                     subjectName: "",
                     numberOfCredit: "",
+                    subjectStatus: "",
                     teacherID: "",
+                    majorID: "",
                     subjectID: "",
                 });
                 setShowUpdateForm(!showUpdateForm);
@@ -426,7 +481,9 @@ function Subject(props) {
             subjectCode: "",
             subjectName: "",
             numberOfCredit: "",
+            subjectStatus: "",
             teacherID: "",
+            majorID: "",
             subjectID: "",
         });
         handleFocus();
@@ -470,6 +527,17 @@ function Subject(props) {
             setTeacherList(teachers.content);
         };
         getAllTeachers();
+    }, []);
+
+    const [majorList, setMajorList] = useState([]);
+
+    useEffect(() => {
+        const getAllMajors = async () => {
+            const majors = await majorApi.getAllMajors();
+
+            setMajorList(majors.content);
+        };
+        getAllMajors();
     }, []);
 
     //phân trang
@@ -611,6 +679,8 @@ function Subject(props) {
                                     <th>Số tín chỉ</th>
                                     <th>Số Lượng Đăng Ký</th>
                                     <th>Giáo Viên</th>
+                                    <th>Ngành</th>
+                                    <th>Trạng thái đăng ký</th>
                                     <th>Thao tác</th>
                                 </tr>
                             </thead>
@@ -621,7 +691,7 @@ function Subject(props) {
                                             <td>{item.subjectCode}</td>
                                             <td>
                                                 <Link
-                                                    to={`/detail-subject/${item.subjectID}`}
+                                                    to={`/chi-tiet-mon-hoc/${item.subjectID}`}
                                                 >
                                                     {item.subjectName}
                                                 </Link>
@@ -638,6 +708,12 @@ function Subject(props) {
                                                     ? item.teacher.teacherName
                                                     : "Chưa có giáo viên"}
                                             </td>
+                                            <td>{item.major.majorName}</td>
+                                            <td>
+                                                {item.subjectStatus === "OPEN"
+                                                    ? "Mở"
+                                                    : "Đóng"}
+                                            </td>
 
                                             <td>
                                                 <button
@@ -647,11 +723,13 @@ function Subject(props) {
                                                             item.subjectCode,
                                                             item.subjectName,
                                                             item.numberOfCredit,
+                                                            item.subjectStatus,
                                                             item.teacher !==
                                                                 null
                                                                 ? item.teacher
                                                                       .teacherID
                                                                 : "",
+                                                            item.major.majorID,
                                                             item.subjectID
                                                         )
                                                     }
@@ -762,6 +840,39 @@ function Subject(props) {
                                 </option>
                             ))}
                         </select>
+                        <label className={cx("user-Error")}></label>
+
+                        <label className={cx("label")}>Chọn ngành</label>
+                        <select
+                            className={cx("selection")}
+                            name="majorID"
+                            value={addForm.majorID || ""}
+                            onChange={handleChangeSelectedMajor}
+                            onFocus={handleFocus}
+                            required
+                        >
+                            <option value={""}>Chọn Ngành</option>
+                            {majorList.map((major, index) => (
+                                <option key={index} value={major.majorID}>
+                                    {major.majorName}
+                                </option>
+                            ))}
+                        </select>
+                        <label className={cx("user-Error")}></label>
+
+                        <label className={cx("label")}>Trạng thái</label>
+                        <select
+                            className={cx("selection")}
+                            name="subjectStatus"
+                            value={addForm.subjectStatus || ""}
+                            onChange={handleChangeSelectedSubjectStatus}
+                            onFocus={handleFocus}
+                            required
+                        >
+                            <option value={""}>Chọn Trạng thái</option>
+                            <option value={"OPEN"}>Mở đăng ký</option>
+                            <option value={"CLOSE"}>Đóng đăng ký</option>
+                        </select>
 
                         <div className={cx("btn")}>
                             <button className={cx("btn-add")}>Thêm</button>
@@ -840,6 +951,38 @@ function Subject(props) {
                                     {teacher.teacherName}
                                 </option>
                             ))}
+                        </select>
+                        <label className={cx("user-Error")}></label>
+
+                        <label className={cx("label")}>Chọn ngành</label>
+                        <select
+                            className={cx("selection")}
+                            name="majorID"
+                            value={updateForm.majorID || ""}
+                            onChange={handleChangeSelectedMajorUpdate}
+                            onFocus={handleFocus}
+                            required
+                        >
+                            {majorList.map((major, index) => (
+                                <option key={index} value={major.majorID}>
+                                    {major.majorName}
+                                </option>
+                            ))}
+                        </select>
+
+                        <label className={cx("user-Error")}></label>
+
+                        <label className={cx("label")}>Trạng thái</label>
+                        <select
+                            className={cx("selection")}
+                            name="subjectStatus"
+                            value={updateForm.subjectStatus || ""}
+                            onChange={handleChangeSelectedUpdateSubjectStatus}
+                            onFocus={handleFocus}
+                            required
+                        >
+                            <option value={"OPEN"}>Mở đăng ký</option>
+                            <option value={"CLOSE"}>Đóng đăng ký</option>
                         </select>
 
                         <div className={cx("btn")}>

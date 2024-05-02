@@ -1,5 +1,6 @@
 package datn.qlth.dto;
 
+import datn.qlth.entity.Enum.SubjectStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -21,7 +22,11 @@ public class SubjectDTO {
 	
 	private Integer maxQuantity;
 	
+	private SubjectStatus subjectStatus;
+	
 	private TeacherInfoDTO teacher;
+	
+	private MajorDTO major;
 	
 	@Data
 	@NoArgsConstructor
@@ -35,5 +40,18 @@ public class SubjectDTO {
 		private String teacherName;
 		
 		private String phoneNumber;
+	}
+	
+	@Data
+	@NoArgsConstructor
+	@AllArgsConstructor
+	public static class MajorDTO{
+		
+		private Integer majorID;
+		
+		private String majorCode;
+		
+		private String majorName;
+		
 	}
 }

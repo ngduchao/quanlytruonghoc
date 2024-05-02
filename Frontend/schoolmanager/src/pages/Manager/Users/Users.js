@@ -679,7 +679,8 @@ function Users(props) {
                                         key={index}
                                         value={classroom.classRoomName}
                                     >
-                                        {classroom.classRoomName}
+                                        {classroom.classRoomName} {" - K"}
+                                        {classroom.course}
                                     </option>
                                 ))}
                             </select>

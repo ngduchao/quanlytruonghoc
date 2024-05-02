@@ -54,6 +54,7 @@ public class WebSecurityConfig {
                         .requestMatchers("/api/v1/registration-subjects/get-registration-subject-by-username").hasAuthority("USER")
                         .requestMatchers("/api/v1/registration-subjects/create-registration-subject").permitAll()
                         .requestMatchers("/api/v1/subjects/get-list-subject").hasAnyAuthority("USER", "ADMIN")
+                        .requestMatchers("/api/v1/subjects/get-list-subject-by-subjectStatus/{majorID}").permitAll()
                         .requestMatchers("/api/v1/users/update-user/{id}").permitAll()
                         .requestMatchers("/api/v1/users/resetPasswordRequest").permitAll()
                         .requestMatchers("/api/v1/users/changePassword").permitAll()

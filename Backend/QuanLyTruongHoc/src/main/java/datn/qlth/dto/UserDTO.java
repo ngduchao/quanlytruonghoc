@@ -43,6 +43,7 @@ public class UserDTO {
 	
 	private ClassRoomDTO classroom;
 	
+	
 	@Data
 	@RequiredArgsConstructor
 	public static class ClassRoomDTO{
@@ -54,7 +55,19 @@ public class UserDTO {
 		private String classRoomName;
 		
 		private Integer course;
+		
+		private MajorDTO major;
 	}
 
+	@Data
+	@RequiredArgsConstructor
+	public static class MajorDTO{
+		
+		private Integer majorID;
+		
+		private String majorCode;
+		
+		private String majorName;
+	}
 
 }

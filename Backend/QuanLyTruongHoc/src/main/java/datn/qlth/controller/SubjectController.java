@@ -31,6 +31,7 @@ import datn.qlth.dto.UpdateSubjectDTO;
 import datn.qlth.dto.filter.SubjectFilterForm;
 import datn.qlth.entity.RegistrationSubject;
 import datn.qlth.entity.Subject;
+import datn.qlth.entity.Enum.SubjectStatus;
 import datn.qlth.service.RegistrationSubjectService;
 import datn.qlth.service.SubjectService;
 import datn.qlth.validation.subject.SubjectCodeExists;
@@ -87,6 +88,17 @@ public class SubjectController {
 	public ResponseEntity<?> getListSubjects(){
 		
 		List<Subject> list = service.getListSubjects();
+		
+		List<SubjectDTO> dtos = modelMapper.map(list, new TypeToken<List<SubjectDTO>>() {
+		}.getType());
+		
+		return new ResponseEntity<>(dtos, HttpStatus.OK);
+	}
+	
+	@GetMapping("/get-list-subject-by-subjectStatus/{majorID}")
+	public ResponseEntity<?> getListSubjectsBySubjectStatus(@PathVariable(name = "majorID") Integer majorID ,@RequestParam SubjectStatus subjectStatus){
+		
+		List<Subject> list = service.getListSubjectBySubjectStatus(subjectStatus, majorID);
 		
 		List<SubjectDTO> dtos = modelMapper.map(list, new TypeToken<List<SubjectDTO>>() {
 		}.getType());

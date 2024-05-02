@@ -31,7 +31,7 @@ function Home() {
                     </p>
                     <p className={cx("title3")}>
                         Liên hệ với chúng tôi ngay hôm nay để có thể sử dụng
-                        dịch vụ hoàn hảo cho việc quản lý trường học của bạn.
+                        dịch vụ cho việc quản lý trường học của bạn.
                     </p>
 
                     <Link
@@ -41,6 +41,44 @@ function Home() {
                         Liên hệ chúng tôi
                     </Link>
                 </div>
+            </div>
+
+            <div className={cx("title-service")}>
+                <p>CÁC DỊCH VỤ CỦA CHÚNG TÔI</p>
+            </div>
+            <div className={cx("services")}>
+                <div className={cx("service1")}>
+                    <h2>QUẢN LÝ</h2>
+                    <p>
+                        EduHub cung cấp cho các trường học một nền tảng an toàn,
+                        bảo mật để quản lý.
+                    </p>
+                </div>
+                <div className={cx("service2")}>
+                    <h2>TÀI NGUYÊN</h2>
+                    <p>
+                        Tài nguyên EduHub tập hợp các tài nguyên giáo dục tốt
+                        nhất có sẵn trực tuyến vào một nền tảng có thể tìm kiếm
+                        đơn giản, cho phép bạn tìm thấy những ý tưởng và tài
+                        liệu mới để hỗ trợ việc giảng dạy và học tập của mình
+                        một cách nhanh chóng và đơn giản.
+                    </p>
+                </div>
+                <div className={cx("service3")}>
+                    <h2>HỖ TRỢ</h2>
+                    <p>
+                        EduHub hỗ trợ trực tiếp cộng đồng giáo dục thông qua
+                        nhiều khoản giảm giá khác nhau, trên nhiều sản phẩm và
+                        dịch vụ mà chúng tôi biết là quan trọng đối với bạn và
+                        trường học của bạn.
+                    </p>
+                </div>
+            </div>
+
+            <div className={cx("sub-title1")}>
+                EduHub sẵn sàng trả lời bất kỳ câu hỏi nào bạn có thể có và tiếp
+                nhận những đóng góp từ bạn, cung cấp cho bạn lời khuyên và hướng
+                dẫn chuyên môn trong toàn bộ quá trình.
             </div>
         </div>
     );

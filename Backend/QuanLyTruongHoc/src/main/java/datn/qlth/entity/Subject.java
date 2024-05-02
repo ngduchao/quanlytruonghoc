@@ -5,8 +5,11 @@ import java.util.List;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
+import datn.qlth.entity.Enum.SubjectStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -44,6 +47,10 @@ public class Subject {
 	
 	@Column(name = "max_quantity")
 	private Integer maxQuantity;
+	
+	@Column(name = "status")
+	@Enumerated(value = EnumType.STRING)
+	private SubjectStatus subjectStatus;
 	
 	@ManyToOne
 	@OnDelete(action = OnDeleteAction.SET_NULL)
