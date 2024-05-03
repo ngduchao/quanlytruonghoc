@@ -1,8 +1,15 @@
 package datn.qlth.service.Impl;
 
+import java.io.IOException;
+import java.io.Writer;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.List;
 
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVPrinter;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,15 +21,19 @@ import datn.qlth.dto.AddTeacherToClassDTO;
 import datn.qlth.dto.ChangeTeacherDTO;
 import datn.qlth.dto.CreateClassRoomDTO;
 import datn.qlth.dto.UpdateClassRoomDTO;
+import datn.qlth.dto.UserDTO;
 import datn.qlth.dto.filter.ClassRoomFilterForm;
 import datn.qlth.entity.ClassRoom;
 import datn.qlth.entity.Major;
 import datn.qlth.entity.Teacher;
+import datn.qlth.entity.User;
 import datn.qlth.repository.ClassRoomRepository;
 import datn.qlth.repository.MajorRepository;
 import datn.qlth.repository.TeacherRepository;
+import datn.qlth.service.CSVConstant;
 import datn.qlth.service.ClassRoomService;
 import datn.qlth.specification.classroom.ClassroomSpecification;
+import jakarta.servlet.http.HttpServletResponse;
 
 @Service
 public class ClassRoomServiceImpl implements ClassRoomService{
@@ -214,5 +225,58 @@ public class ClassRoomServiceImpl implements ClassRoomService{
 	@Override
 	public boolean isClassRoomExistsByClassRoomNameAndCourse(String classRoomName, Integer course) {
 		return repository.existsByClassRoomNameAndCourse(classRoomName, course);
+	}
+
+	@Override
+	public void exportListStudentsInClass(HttpServletResponse servletResponse, Integer classRoomID) throws IOException {
+		List<User> list = getClassRoomByID(classRoomID).getUsers();
+		
+		List<UserDTO> dtos = modelMapper.map(list, new TypeToken<List<UserDTO>>() {
+		}.getType());
+		
+		servletResponse.setContentType(CSVConstant.FILETYPE);
+		servletResponse.addHeader(CSVConstant.CONTENT_DISPOSITION, CSVConstant.FILE_NAME_STUDENT_IN_CLASS);
+		writeAccountToCsv(servletResponse.getWriter(), dtos);
+	}
+	
+	public void writeAccountToCsv(Writer writer, List<UserDTO> dtos) {
+		try (CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT)) {
+			csvPrinter.printRecord(
+					CSVConstant.NO, 
+					CSVConstant.USER_CODE,
+					CSVConstant.FIRST_NAME,
+					CSVConstant.LAST_NAME,
+					CSVConstant.BIRTH_DAY,
+					CSVConstant.GENDER,
+					CSVConstant.EMAIL_ADDRESS,
+					CSVConstant.PHONE,
+					CSVConstant.HOME_TOWN,
+					CSVConstant.STATUS);
+			
+			SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+
+			for (UserDTO entity : dtos) {
+				int index = dtos.indexOf(entity) + 1;
+				
+				String formattedBirthDay = dateFormat.format(entity.getBirthDay());
+				
+				String status = entity.getStatus().toString().equals("STUDYING") ? "Đang học" : "Đã nghỉ";
+				
+				csvPrinter.printRecord(
+						index,
+						entity.getUserCode(),
+						entity.getFirstName(),
+						entity.getLastName(),
+						formattedBirthDay,
+						entity.getGender(),
+						entity.getEmail(),
+						entity.getPhoneNumber(),
+						entity.getHomeTown(),
+						status
+						);
+			}
+		} catch (IOException e) {
+			System.out.println(e.getMessage());
+		}
 	}
 }

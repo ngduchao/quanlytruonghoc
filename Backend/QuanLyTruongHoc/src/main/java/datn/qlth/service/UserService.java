@@ -1,5 +1,6 @@
 package datn.qlth.service;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -16,6 +17,7 @@ import datn.qlth.dto.UpdateUserDTO;
 import datn.qlth.dto.filter.UserFilterForm;
 import datn.qlth.entity.RegistrationSubject;
 import datn.qlth.entity.User;
+import jakarta.servlet.http.HttpServletResponse;
 
 public interface UserService {
 	
@@ -32,6 +34,10 @@ public interface UserService {
 	public User getUserByUserCode(String userCode);
 	
 	public List<User> getListUsers();
+	
+	public List<User> getList();
+	
+	public void generateExcel(HttpServletResponse response)  throws IOException;
 	
 	public void updateUser (Integer ID, UpdateUserDTO form);
 	
@@ -68,5 +74,9 @@ public interface UserService {
 	public User changePassword(User user, ChangePasswordFromDTO form);
 	
 	public void resetPassword(String email, String newPassword);
+	
+	public void exportListUser(HttpServletResponse servletResponse)throws IOException;
+	
+//	public List<User>
 	
 }

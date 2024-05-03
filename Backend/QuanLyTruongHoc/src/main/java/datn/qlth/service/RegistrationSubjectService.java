@@ -1,5 +1,6 @@
 package datn.qlth.service;
 
+import java.io.IOException;
 import java.util.List;
 
 import datn.qlth.dto.CreateRegistrationSubjectDTO;
@@ -9,6 +10,7 @@ import datn.qlth.dto.ScoreFormDTO;
 import datn.qlth.dto.UpdateRegistrationSubjectDTO;
 import datn.qlth.dto.filter.RegistrationSubjectFilterForm;
 import datn.qlth.entity.RegistrationSubject;
+import jakarta.servlet.http.HttpServletResponse;
 
 public interface RegistrationSubjectService {
 	
@@ -35,4 +37,6 @@ public interface RegistrationSubjectService {
 	public boolean isExistsRegistrationSubjectByID(Integer ID);
 	
 	public boolean isExistsRegistrationSubjectByUser(String userCode, Integer subjectID);
+	
+	public void exportListRegistrationSubject(HttpServletResponse servletResponse, Integer subjectID)throws IOException;
 }

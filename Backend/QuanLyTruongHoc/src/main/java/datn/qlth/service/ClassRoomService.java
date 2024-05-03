@@ -1,5 +1,7 @@
 package datn.qlth.service;
 
+import java.io.IOException;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -10,6 +12,7 @@ import datn.qlth.dto.CreateClassRoomDTO;
 import datn.qlth.dto.UpdateClassRoomDTO;
 import datn.qlth.dto.filter.ClassRoomFilterForm;
 import datn.qlth.entity.ClassRoom;
+import jakarta.servlet.http.HttpServletResponse;
 
 public interface ClassRoomService {
 	
@@ -42,4 +45,6 @@ public interface ClassRoomService {
 	public boolean isClassRoomExistsByClassRoomName(String classRoomName);
 	
 	public boolean isClassRoomExistsByClassRoomNameAndCourse(String classRoomName, Integer course);
+
+	public void exportListStudentsInClass(HttpServletResponse servletResponse, Integer classRoomID)throws IOException;
 }

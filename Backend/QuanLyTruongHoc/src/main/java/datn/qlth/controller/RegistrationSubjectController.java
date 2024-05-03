@@ -1,5 +1,6 @@
 package datn.qlth.controller;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.modelmapper.ModelMapper;
@@ -29,11 +30,14 @@ import datn.qlth.dto.UpdateRegistrationSubjectDTO;
 import datn.qlth.dto.filter.RegistrationSubjectFilterForm;
 import datn.qlth.entity.RegistrationSubject;
 import datn.qlth.entity.Subject;
+import datn.qlth.entity.User;
+import datn.qlth.entity.UserExcelExporter;
 import datn.qlth.service.RegistrationSubjectService;
 import datn.qlth.service.SubjectService;
 import datn.qlth.validation.registrationSubject.RegistrationSubjectIDExists;
 import datn.qlth.validation.subject.SubjectIDExists;
 import datn.qlth.validation.user.UserCodeExists;
+import jakarta.servlet.http.HttpServletResponse;
 
 @CrossOrigin("*")
 @RestController
@@ -191,4 +195,10 @@ public class RegistrationSubjectController {
 		
 		return new ResponseEntity<>(dtos, HttpStatus.OK);
 	}
+	
+	@GetMapping("/export/csv")
+    public void exportToExcel(HttpServletResponse response, @RequestParam Integer subjectID) throws IOException {
+		service.exportListRegistrationSubject(response, subjectID);
+	}
+    
 }

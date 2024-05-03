@@ -1,5 +1,6 @@
 package datn.qlth.controller;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.modelmapper.ModelMapper;
@@ -36,6 +37,7 @@ import datn.qlth.entity.ClassRoom;
 import datn.qlth.service.ClassRoomService;
 import datn.qlth.validation.classroom.ClassroomCodeExists;
 import datn.qlth.validation.classroom.ClassroomIDExists;
+import jakarta.servlet.http.HttpServletResponse;
 
 @CrossOrigin("*")
 @RestController
@@ -215,5 +217,10 @@ public class ClassRoomController {
 		boolean result = service.isClassRoomExistsByClassRoomNameAndCourse(classRoomName, course);
 		
 		return new ResponseEntity<>(result, HttpStatus.OK);
+	}
+	
+	@GetMapping("/export/csv")
+    public void exportToExcel(HttpServletResponse response, @RequestParam Integer classRoomID) throws IOException {
+		service.exportListStudentsInClass(response, classRoomID);
 	}
 }

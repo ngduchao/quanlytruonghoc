@@ -1,7 +1,17 @@
 package datn.qlth.controller;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,10 +49,12 @@ import datn.qlth.dto.UserDTO;
 import datn.qlth.dto.filter.UserFilterForm;
 import datn.qlth.entity.RegistrationSubject;
 import datn.qlth.entity.User;
+import datn.qlth.entity.UserExcelExporter;
 import datn.qlth.service.UserService;
 import datn.qlth.validation.user.UserCodeExists;
 import datn.qlth.validation.user.UserIDExists;
 import datn.qlth.validation.user.UsernameExists;
+import jakarta.servlet.http.HttpServletResponse;
 
 @CrossOrigin("*")
 @RestController
@@ -286,5 +298,37 @@ public class UserController {
 		boolean result = service.isUserExistsByPhoneNumber(phoneNumber);
 		
 		return new ResponseEntity<>(result, HttpStatus.OK);
+	}
+	
+	@GetMapping(value = "/export")
+	public void exportUserToExcel(HttpServletResponse response) throws IOException{
+		response.setContentType("application/octet-stream");
+		String headerKey = "Content-Disposition";
+		String headerValue = "attachment;filename=students.xlsx";
+		response.setHeader(headerKey, headerValue);
+		service.generateExcel(response);
+ 	}
+	
+	@GetMapping("/export/excelbyapi")
+    public String exportToExcelByAPI(HttpServletResponse response) throws IOException {
+        response.setContentType("application/octet-stream");
+         
+        String headerKey = "Content-Disposition";
+        String headerValue = "attachment; filename=users.xlsx";
+        response.setHeader(headerKey, headerValue);
+         
+        List<User> listUsers = service.getList();
+   
+        UserExcelExporter excelExporter = new UserExcelExporter(listUsers);
+         
+        excelExporter.export(response);
+        
+        
+        return "OK";
+    }
+	
+	@GetMapping("/export/excel")
+    public void exportToExcel(HttpServletResponse response) throws IOException {
+		service.exportListUser(response);
 	}
 }

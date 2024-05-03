@@ -1,14 +1,22 @@
 package datn.qlth.service.Impl;
 
+import java.io.IOException;
+import java.io.Writer;
+import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVPrinter;
+import org.apache.commons.csv.CSVRecord;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import datn.qlth.dto.CreateRegistrationSubjectDTO;
 import datn.qlth.dto.DeleteRegistrationSubjectDTO;
+import datn.qlth.dto.RegistrationSubjectDTO;
 import datn.qlth.dto.RegistrationSubjectForStudentDTO;
 import datn.qlth.dto.ScoreFormDTO;
 import datn.qlth.dto.UpdateRegistrationSubjectDTO;
@@ -19,8 +27,10 @@ import datn.qlth.entity.User;
 import datn.qlth.repository.RegistrationSubjectRepository;
 import datn.qlth.repository.SubjectRepository;
 import datn.qlth.repository.UserRepository;
+import datn.qlth.service.CSVConstant;
 import datn.qlth.service.RegistrationSubjectService;
 import datn.qlth.specification.registrationSubject.RegistrationSubjectSpecification;
+import jakarta.servlet.http.HttpServletResponse;
 
 @Service
 public class RegistrationSubjectImpl implements RegistrationSubjectService{
@@ -198,5 +208,47 @@ public class RegistrationSubjectImpl implements RegistrationSubjectService{
 		User user = userRepository.findByUsername(username).get();
 		
 		return repository.findByUser(user);
+	}
+
+	@Override
+	public void exportListRegistrationSubject(HttpServletResponse servletResponse, Integer subjectID) throws IOException {
+		
+		List<RegistrationSubject> list = getRegistrationSubjectsBySubject(subjectID);
+		
+		List<RegistrationSubjectDTO> dtos = modelMapper.map(list, new TypeToken<List<RegistrationSubjectDTO>>() {
+		}.getType());
+		servletResponse.setContentType(CSVConstant.FILETYPE);
+		servletResponse.addHeader(CSVConstant.CONTENT_DISPOSITION, CSVConstant.FILE_NAME_TRANSCRIPT);
+		writeAccountToCsv(servletResponse.getWriter(), dtos);
+	}
+	
+	public void writeAccountToCsv(Writer writer, List<RegistrationSubjectDTO> dtos) {
+		try (CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT)) {
+			csvPrinter.printRecord("Transcript");
+			csvPrinter.printRecord(
+					CSVConstant.NO, 
+					CSVConstant.USER_CODE,
+					CSVConstant.FULL_NAME, 
+					CSVConstant.REGULAR_POINT1,
+					CSVConstant.REGULAR_POINT2,
+					CSVConstant.MIDTERM_SCORE,
+					CSVConstant.FINAL_SCORE);
+
+			for (RegistrationSubjectDTO registrationSubject : dtos) {
+				int index = dtos.indexOf(registrationSubject) + 1;
+
+				csvPrinter.printRecord(
+						index, 
+						registrationSubject.getUser().getUserCode(),
+						registrationSubject.getUser().getFullName(),
+						registrationSubject.getRegularPoint1(),
+						registrationSubject.getRegularPoint2(),
+						registrationSubject.getMidtermScore(),
+						registrationSubject.getFinalScore());
+			}
+ 
+		} catch (IOException e) {
+			System.out.println(e.getMessage());
+		}
 	}
 }
