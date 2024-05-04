@@ -1,2 +1,2 @@
-## EduHub Quan ly truong hoc
-# Quan ly truong hoc
+# EduHub Quan ly truong hoc
+## Quan ly truong hoc
