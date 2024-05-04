@@ -37,6 +37,7 @@ import majorApi from "../../../services/api/majorApi";
 const cx = classNames.bind(styles);
 
 function Subject(props) {
+    console.log(props.subjects);
     const notify = (values) => {
         toast(values);
     };

@@ -9,6 +9,31 @@
     }
 }
 
+.btn-export{
+    height: 30px;
+    width: 150px;
+    margin-left: 25px;
+    margin-top: 20px;
+
+    border-radius: 5px;
+    cursor: pointer;
+
+    background-color: var(--primary);
+    color: var(--white);
+
+    font-size: 15px;
+    font-family: var(--font-family);
+
+    .icons {
+        margin-right: 2px;
+        margin-left: 2px;
+    }
+
+    &:hover {
+        background: linear-gradient(0deg, rgba(0, 0, 0, 0.321), rgba(0, 0, 0, 0.321)), var(--primary);
+    }
+}
+
 
 .table {
     overflow: auto;
@@ -47,7 +72,7 @@
     overflow: auto;
 
     margin-left: 20px;
-    margin-top: 30px;
+    margin-top: 20px;
   }
   
   .table-info table {
