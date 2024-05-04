@@ -2,6 +2,8 @@
 ## Các chức năng
 ***Đăng nhập***<br>
 Admin, Sinh viên đăng nhập bằng tài khoản do người quản trị cấp.<br>
+
+***Sinh viên***<br>
 Sinh viên có thể đăng ký môn học theo ngành học, xem điểm môn học, xem và chỉnh sửa thông tin cá nhân, quên mật khẩu.
 
 ***Admin***<br>
