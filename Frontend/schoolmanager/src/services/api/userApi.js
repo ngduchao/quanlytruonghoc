@@ -159,6 +159,10 @@ const getUserByUsername = (username) => {
     return Api.get(`${url}/get-user-by-username`, { params: parameters });
 };
 
+const exportToExcel = () => {
+    return Api.get(`${url}/export/excel`);
+};
+
 const api = {
     getAllUsers,
     getById,
@@ -177,6 +181,7 @@ const api = {
     checkPhoneNumberExist,
     getUserByUserCode,
     getUserByUsername,
+    exportToExcel,
 };
 
 export default api;

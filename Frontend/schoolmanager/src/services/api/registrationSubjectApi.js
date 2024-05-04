@@ -65,6 +65,13 @@ const checkRegistrationSubjectExistsByUserIDAndSubjectID = (
     );
 };
 
+const exportCSV = (subjectID = "") => {
+    const parameters = {
+        subjectID,
+    };
+    return Api.get(`${url}/export/csv`, { params: parameters });
+};
+
 const api = {
     getAll,
     getAllRegistrationSubjects,
@@ -74,6 +81,7 @@ const api = {
     deleteRegistrationSubject,
     checkRegistrationSubjectExistsByUserIDAndSubjectID,
     getListRegistrationSubjectsByUser,
+    exportCSV,
 };
 
 export default api;

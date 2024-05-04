@@ -69,6 +69,13 @@ const CheckClassRoomNameAndCourse = (classRoomName, course) => {
     return Api.get(`${url}/classRoomNameAndCourse/${classRoomName}/${course}`);
 };
 
+const exportCSV = (classRoomID = "") => {
+    const parameters = {
+        classRoomID,
+    };
+    return Api.get(`${url}/export/csv`, { params: parameters });
+};
+
 const api = {
     getAllClassrooms,
     getById,
@@ -78,6 +85,7 @@ const api = {
     checkClassRoomCodeExists,
     CheckClassRoomNameAndCourse,
     checkClassRoomNameExists,
+    exportCSV,
 };
 
 export default api;

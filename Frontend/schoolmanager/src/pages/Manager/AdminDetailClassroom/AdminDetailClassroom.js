@@ -5,6 +5,9 @@ import { useParams } from "react-router";
 
 import styles from "./AdminDetailClassroom.module.scss";
 import classroomApi from "../../../services/api/classroomApi";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faFileExport } from "@fortawesome/free-solid-svg-icons";
+import fileDownload from "js-file-download";
 
 const cx = classNames.bind(styles);
 
@@ -15,6 +18,13 @@ function AdminDetailClassroom() {
     const [usersInfo, setUsersInfo] = useState({});
 
     const { classRoomID } = useParams();
+
+    //export
+    const handleExport = async (e) => {
+        const res = await classroomApi.exportCSV(classRoomID);
+        // console.log(res);
+        fileDownload(res, classRoomInfo.classRoomCode + ".csv");
+    };
 
     useEffect(() => {
         const getTeacher = async () => {
@@ -69,6 +79,15 @@ function AdminDetailClassroom() {
                         <td>{classRoomInfo.quantity}</td>
                     </tr>
                 </table>
+            </div>
+
+            <div className={cx("top-container")}>
+                <button onClick={handleExport} className={cx("btn-export")}>
+                    <span>
+                        <FontAwesomeIcon icon={faFileExport} />
+                    </span>
+                    Export to CSV
+                </button>
             </div>
 
             <div className={cx("table-info")}>

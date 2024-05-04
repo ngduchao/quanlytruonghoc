@@ -3,7 +3,7 @@ import { bindActionCreators } from "redux";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { faFileExport, faPlus } from "@fortawesome/free-solid-svg-icons";
 import toast, { Toaster } from "react-hot-toast";
 import classNames from "classnames/bind";
 
@@ -17,6 +17,7 @@ import {
 import { selectRegistrationSubjects } from "../../../redux/selectors/registrationSubjectSelector";
 import registrationSubjectApi from "../../../services/api/registrationSubjectApi";
 import subjectApi from "../../../services/api/subjectApi";
+import fileDownload from "js-file-download";
 
 const cx = classNames.bind(styles);
 
@@ -60,6 +61,16 @@ function AdminDetailSubject(props) {
 
     const handleFocus = () => {
         setUserCodeError("");
+    };
+
+    //export
+    const handleExport = async (e) => {
+        const res = await registrationSubjectApi.exportCSV(subjectID);
+        // console.log(res);
+        fileDownload(
+            res,
+            subjectInfo.subjectName + "_" + subjectInfo.subjectCode + ".csv"
+        );
     };
 
     //thêm mới
@@ -284,6 +295,13 @@ function AdminDetailSubject(props) {
                             <FontAwesomeIcon icon={faPlus} />
                         </span>
                         Thêm sinh viên vào lớp
+                    </button>
+
+                    <button onClick={handleExport} className={cx("btn-export")}>
+                        <span>
+                            <FontAwesomeIcon icon={faFileExport} />
+                        </span>
+                        Export to CSV
                     </button>
                 </div>
 

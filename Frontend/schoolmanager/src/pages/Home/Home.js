@@ -5,6 +5,9 @@ import classNames from "classnames/bind";
 import styles from "./Home.module.scss";
 import thump from "../../../src/assets/images/thump.jpg";
 import config from "../../config/index";
+import fileDownload from "js-file-download";
+
+import userApi from "../../services/api/userApi";
 
 const cx = classNames.bind(styles);
 
@@ -18,6 +21,19 @@ function Home() {
             setLoaded(true);
         }, 100);
     }, [location.pathname]);
+
+    const handleExport = async (e) => {
+        const res = await userApi.exportToExcel();
+        // console.log(res);
+        fileDownload(res, "AccountList.csv");
+        // e.preventDefault();
+        // try {
+        //     await userApi.exportToExcel();
+        //     console.log("Abc");
+        // } catch (error) {
+        //     console.error("Error creating data: ", error);
+        // }
+    };
 
     return (
         <div className={cx("wrapper", { active: loaded })}>
@@ -42,6 +58,8 @@ function Home() {
                     </Link>
                 </div>
             </div>
+
+            <button onClick={handleExport}>Export to Excel</button>
 
             <div className={cx("title-service")}>
                 <p>CÁC DỊCH VỤ CỦA CHÚNG TÔI</p>
