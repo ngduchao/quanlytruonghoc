@@ -1,2 +1,3 @@
-# EduHub Quan ly truong hoc
-## Quan ly truong hoc
+# EduHub Quản lý trường học
+## Các chức năng
+**bold**
