@@ -1,0 +1,145 @@
+
+.wrapper {
+    position: relative; 
+    width: 1460px;
+}
+
+.thump {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.title1 {
+    position: absolute;
+    top: 15%;
+    left: 10%;
+    color: #333;
+    font-size: 4.2rem;
+    line-height: 50px;
+    background-color: rgba(255, 255, 255, 0.8);
+    width: 500px;
+    opacity: 0; 
+    transition: opacity 1.5s ease;
+    transform: translateY(-500px);
+    animation: title1Fall 1s ease-in-out forwards;
+}
+
+@keyframes title1Fall {
+    from { transform: translateY(-500px); opacity: 0; } 
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.title2 {
+    position: absolute;
+    top: 25%;
+    left: 10%;
+    color: #333;
+    font-size: 3rem;
+    line-height: 35px;
+    background-color: rgba(255, 255, 255, 0.8);
+    width: 500px;
+    opacity: 0;
+    transition: opacity 1.5s ease;
+    transform: translateY(-500px);
+    transition: transform 1s ease-in-out, opacity 1s ease-in-out;
+    transform: translateY(-500px);
+    opacity: 0;
+}
+
+.wrapper.active .title2 {
+    transform: translateY(0); 
+    opacity: 1;
+  }
+
+.title3 {
+    position: absolute;
+    top: 32.2%; 
+    left: 10%;
+    color: #333;
+    font-size: 3rem;
+    line-height: 40px;
+    background-color: rgba(255, 255, 255, 0.8);
+    width: 500px;
+    opacity: 0;
+    transition: opacity 1.5s ease;
+    transform: translateY(-500px);
+    animation: title3Slide 1s ease-in-out forwards;
+}
+
+@keyframes title3Slide {
+    from { transform: translateX(-500px); opacity: 0; } 
+    to { transform: translateX(0); opacity: 1; }
+}
+
+.contact-us{
+    position: absolute; 
+    top: 48%; 
+    left: 10%; 
+    color: var(--white);
+    line-height: 35px;
+    background-color: #ff5b4f;
+    width: 180px;
+    height: 50px;
+    text-align: center;
+    padding-top: 6px;
+
+    &:hover{
+        background-color: #fc3b2d;
+        color: var(--white);
+    }
+}
+
+.title-service {
+    text-align: center;
+    margin: 0 auto; 
+    width: 50%;
+    font-size: 2.5rem;
+    margin-top: 80px;
+    margin-bottom: 20px;
+}
+
+.services {
+    display: flex;
+    justify-content: space-between; 
+}
+
+.service1, .service2, .service3 {
+    flex: 1;
+    padding: 10px; 
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); 
+    border-radius: 5px;
+    margin-right: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+}
+
+.service1{
+    background-color: #cbffff;
+    margin-left: 5px;
+}
+
+.service2{
+    background-color: #7FD8A5;
+}
+
+.service3{
+    background-color: #04b2d9;
+}
+
+.services >.service1:hover,
+.services >.service2:hover,
+.services >.service3:hover{
+    transform: scale(1.05); 
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+}
+
+
+.sub-title1 {
+    font-size: 2.5rem;
+    width: 80%;
+    margin: 50px auto;
+    text-align: center;
+    font-weight: 400;
+    line-height: 35px;
+}

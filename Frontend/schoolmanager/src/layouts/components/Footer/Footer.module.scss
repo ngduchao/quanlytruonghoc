@@ -1,0 +1,84 @@
+.wrapper {
+    display: flex;
+    justify-content: center;
+    height: 200px;
+    width: 100%;
+    border: 1px solid #333;
+    // bottom: 0;
+    background: #22314e;
+}
+
+.container {
+    margin-left: 70px;
+    margin-top: 30px;
+    display: flex;
+}
+
+.logo {
+    height: 120px;
+    width: 200px;
+    background: transparent;
+}
+
+.content {
+    margin-left: 250px;
+    margin-top: 40px;
+
+    font-family: var(--font-family);
+    color: var(--white);
+    font-weight: 200;
+}
+
+.social-link {
+    margin-left: 200px;
+}
+
+.btn-social-facebook,
+.btn-social-instagram,
+.btn-social-github {
+    display: inline-block;
+    margin-right: 30px;
+    height: 50px;
+    width: 50px;
+    background: var(--white);
+
+    margin-top: 40px;
+
+    border-radius: 50%;
+
+    background-color: #8ee3ff;
+    color: #032E59;
+
+    transition: background-color 0.3s ease;
+}
+
+.icon {
+    height: 22px;
+    width: 22px;
+    margin-left: 28%;
+    margin-top: 28%;
+}
+
+.btn-social-facebook:hover{
+    background-color: #4285F4;
+    color: var(--white);
+    border: none;
+
+    transition-delay: 0.02s;
+}
+
+.btn-social-github:hover{
+    background-color: var(--white);
+    color: black;
+    border: none;
+
+    transition-delay: 0.02s;
+}
+
+.btn-social-instagram:hover{
+    background-image: linear-gradient(140deg, #405DE6, #5851DB, #833AB4, #C13584, #E1306C, #FD1D1D, #F56040, #FFDC80);
+    color: var(--white);
+    border: none;
+
+    transition-delay: 0.02s;
+}

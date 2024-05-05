@@ -1,0 +1,26 @@
+const routes = {
+    home: "/",
+    profile: "/profile",
+    manager: "/manager",
+    login: "/login",
+    feedback: "/feedback",
+    forgotPassword: "/quen-mat-khau",
+    managerFaculty: "/admin/quan-ly-khoa",
+    managerMajor: "/admin/quan-ly-nganh",
+    managerSubject: "/admin/quan-ly-mon-hoc",
+    managerClassroom: "/admin/quan-ly-lop-hoc",
+    managerUsers: "/admin/quan-ly-nguoi-dung",
+    managerAdmins: "/admin/quan-ly-admin",
+    managerTeachers: "/admin/quan-ly-giang-vien",
+    changePassword: "/change-password",
+    support: "/ho-tro",
+    contactUs: "/lien-he-chung-toi",
+    servicePage: "/dich-vu",
+    documentPage: "/tai-lieu",
+    adminDetailClassRoom: "/chi-tiet-lop-hoc/:classRoomID",
+    adminDetailSubject: "/chi-tiet-mon-hoc/:subjectID",
+    studyResult: "/sinh-vien/ket-qua-hoc-tap",
+    registrationSubject: "/sinh-vien/dang-ky-mon-hoc",
+};
+
+export default routes;
