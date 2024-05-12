@@ -1,0 +1,101 @@
+.wrapper {
+  width: 120%;
+  margin: 0 auto;
+  margin-top: 10px;
+  margin-left: -100px;
+}
+
+.blur {
+    opacity: 20%;
+
+    button, table {
+        pointer-events: none;
+        user-select: none;
+    }
+}
+
+.top-table {
+    border-collapse: collapse;
+    width: 100%;
+    margin-bottom: 30px;
+}
+
+.top-table table {
+    width: 100%;
+}
+
+.top-table td:first-child {
+    width: 30%; /* Đặt độ rộng cố định cho cột bên trái */
+}
+
+.top-table td:last-child {
+    width: auto; /* Cột bên phải sẽ tự động mở rộng */
+}
+
+
+.top-table td, .top-table th {
+    border: 1px solid rgba(92, 92, 92, 0.11);
+    text-align: left;
+    padding: 8px;
+}
+
+.top-table tr:nth-child(odd) {
+    background-color: #f2f2f2;
+}
+  
+  .table-subject {
+    overflow-x: auto;
+  }
+  
+  .table-subject table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .table-subject th,
+  .table-subject td {
+    padding: 10px;
+    border: 1px solid rgba(92, 92, 92, 0.11);
+  }
+  
+  .table-subject th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+  }
+  
+  .table-subject td {
+    text-align: left;
+  }
+  
+  .table-subject tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+  
+  .table-subject button {
+    padding: 5px 10px;
+    background-color: var(--primary);
+    color: var(--white);
+    border: none;
+    cursor: pointer;
+  }
+  
+  .table-subject button:hover {
+    background: linear-gradient(0deg, rgba(0, 0, 0, 0.321), rgba(0, 0, 0, 0.321)), var(--primary);
+  }
+  
+  .table-subject td[colspan="7"] {
+    text-align: center;
+    font-style: italic;
+    color: #999;
+  }
+
+  .btn-add {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .btn-register{
+    border-radius: 5px;
+  }
+  
