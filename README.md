@@ -8,6 +8,7 @@ Sinh viên có thể đăng ký môn học theo ngành học, xem điểm môn h
 
 ***Admin***<br>
 Xem, thêm, sửa, xóa thông tin của khoa, ngành, lớp, môn học, giáo viên, sinh viên, nhập điểm cho sinh viên.<br>
+Xuất dữ liệu ra file .CSV <br>
 
 ***Tích hợp jwt và spring security để bảo mật, phân quyền***<br>
 
