@@ -1,0 +1,40 @@
+.wrapper {
+    width: 250px;
+    margin-left: -45px;
+    margin-top: -29px;
+    padding-top: 20px;
+    border: 1px solid #33333350;
+    border-radius: 5px;
+
+}
+
+.logo {
+    display: flex;
+    justify-content: center;
+    // margin-bottom: 10px;
+    user-select: none;
+
+    img {
+        height: 50px;
+        width: 100px;
+    }
+}
+
+.title {
+    display: flex;
+    justify-content: center;
+    font-family: var(--font-family);
+    font-weight: 400;
+    font-style: normal;
+    font-size: 2rem;
+    line-height: 26px;
+
+    padding-top: 10px;
+    padding-bottom: 10px;
+    cursor: default;
+}
+
+.container {
+    padding-top: 15px;
+    padding-left: 15px;
+}
