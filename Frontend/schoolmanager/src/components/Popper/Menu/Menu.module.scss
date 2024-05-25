@@ -1,0 +1,33 @@
+//Menu wrapper
+.menu-list {
+    width: 230px;
+    line-height: 2rem;
+    background-color: var(--white);
+
+    .items{
+        display: block;
+        font-family: var(--font-family);
+        font-weight: 500;
+        font-style: normal;
+        font-size: 1.6rem;
+        line-height: 26px;
+        background: transparent;
+        padding: 10px 20px;
+    }
+}
+
+.menu-popper {
+    padding-top: 8px;
+    padding-bottom: 8px;
+}
+
+.items {
+    
+    &button{
+        width: 100%;
+    }
+
+    &:hover{
+        background-color: rgba(22, 24, 35, 0.03);
+    }
+}
